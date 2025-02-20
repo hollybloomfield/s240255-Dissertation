@@ -23,4 +23,31 @@ export default {
   plugins: [
     require('daisyui'),
   ],
+  daisyui: {
+    themes: [
+      {
+        Festie: {
+          
+        
+          "primary": "#b72b63",
+          
+          "secondary": "#f4a8c7",
+                    
+          "accent": "#f8c291",
+                    
+          "neutral": "#fda4af",
+                    
+          "base-100": "#fefefa",
+                    
+          "info": "#67e8f9",
+                    
+          "success": "#86efac",
+                    
+          "warning": "#fcd34d",
+                    
+          "error": "#f43f5e",
+          },
+        },
+      ],
+    },
 }

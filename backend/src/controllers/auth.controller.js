@@ -51,6 +51,8 @@ export const signup = async (req,res) => {
                 email: newUser.email,
                 dateOfBirth: newUser.dateOfBirth,
                 profilePic: newUser.profilePic,
+                bio: newUser.bio,
+                preferences: newUser.preferences,
             })
 
         } else {
@@ -83,6 +85,9 @@ export const login = async(req,res) => {
             email: user.email,
             firstName: user.firstName,
             lastName: user.lastName,
+            profilePic: user.profilePic,
+            bio: user.bio,
+            preferences: user.preferences,
         })
 
     } catch (error) {
@@ -103,23 +108,40 @@ export const logout = (req,res) => {
 
 export const updateProfile = async(req, res) => {
     try {
-        const {profilePic} = req.body
+        const {profilePic, bio, preferences} = req.body
         const userId = req.user._id
 
-        if(!profilePic){
-            res.status(400).json({message: "Profile pic is required"})
-        }
+        const currentUser = await User.findById(userId)
 
-        //uploads image to cloudinary but not db
+        const updateData = {}
+        // checks if profilepic has been changed if not it won't be added to the update so it doesn't overwrite
+        if(profilePic){
+            //uploads image to cloudinary but not db
         const uploadResponse = await cloudinary.uploader.upload(profilePic)
+        updateData.profilePic = uploadResponse.secure_url;
+        }
+        // checks if bio has been changed if not it won't be added to the update so it doesn't overwrite
+        if (bio !== undefined) {
+            updateData.bio = bio;
+          }
+        // checks if preferences have been changed 
+        if (preferences) {
+           updateData.preferences = preferences
+          }
+        
+
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No data provided to update" });
+          }
+      
+
+        
 
         //updates database and new:true means latest updates can be seen even after they've just been applied
-        const updatedUser = await User.findById(userId, {profilePic:uploadResponse.secure_url}, {new:true})
+        const updatedUser = await User.findByIdAndUpdate(userId, updateData, {new:true})
 
         res.status(200).json(updatedUser)
-
-
-    } catch (error) {
+        } catch (error) {
         console.log("error in update profile controller:", error)
         res.status(500).json({message: "Internal server error"})
     }

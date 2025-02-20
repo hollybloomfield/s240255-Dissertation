@@ -36,6 +36,30 @@ const userSchema = new mongoose.Schema(
                 message: 'You must be at least 16 years old to register.',
               },
         },
+        bio: {
+            type: String,
+            default: "",
+        },
+        preferences: {
+            accommodation: {
+                type: String,
+                enum: ['Camping', "Glamping" , "Hotel" , "Campervan", "Day Trip", ""],
+                default: "",
+            },
+
+            travelMode: {
+                type: String,
+                enum: ["Drive myself", "Rideshare", "Train", "Coach", ""],
+                default: "",
+            },
+
+            musicGenre: {
+                type: String,
+                enum: ["EDM","Rock","Pop","Hip-Hop","Indie","Open to anything", ""],
+                default: "",
+
+            },
+        }
     },
     { timestamps: true }
 );

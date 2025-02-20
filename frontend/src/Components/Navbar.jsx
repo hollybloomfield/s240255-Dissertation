@@ -1,18 +1,23 @@
 import { Settings } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 
 const Navbar = () => {
 const {logout, authUser} = useAuthStore()
+const location = useLocation()
 
-if (!authUser){
+const hiddenRoutes = ["/edit-profile", "/create-profile"]
+
+if (!authUser || hiddenRoutes.includes(location.pathname)){
   return null
 }
+
+console.log(authUser.profilePic)
 
   return (
 <div className="navbar bg-base-100 border-b border-gray-100 pt-5 fixed top-0 left-0 right-0">
   <div className="flex-1">
-    <a className="btn btn-ghost text-4xl font-gluten text-primary">Festie</a>
+    <a className="text-4xl font-gluten text-primary">Festie</a>
   </div>
   <div className="flex-none">
      <div className="dropdown dropdown-end">
@@ -20,16 +25,15 @@ if (!authUser){
         <div className="w-10 rounded-full">
           <img
             alt="Tailwind CSS Navbar component"
-            src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
+            src={authUser.profilePic || "/avatar.png"} />
         </div>
       </div>
       <ul
         tabIndex={0}
         className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-        <li>
-          <a className="justify-between">
-            Edit Profile
-          </a>
+        <li>          
+            <Link to= "/edit-profile">Edit Profile</Link>
+         
         </li>
         <li><a>Settings</a></li>
         <li><button className="" onClick={logout}>Logout</button></li>

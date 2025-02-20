@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
 import { CalendarDays, Eye, EyeOff, Loader2, Lock, Mail, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import moment from "moment";
 
 const SignUpPage = () => {
+  const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
@@ -14,6 +15,7 @@ const SignUpPage = () => {
     dateOfBirth: "",
     password: "",
   })
+  const [isFemale, setIsFemale] = useState(false)
 
   const {signup, isSigningUp} = useAuthStore()
 
@@ -26,6 +28,7 @@ const SignUpPage = () => {
     if (!formData.password) return toast.error("Password is required")
     if (!formData.dateOfBirth) return toast.error("Date of Birth is required")
     if (formData.password.length < 8) return toast.error("Password must be at least 6 characters")
+    if (!isFemale) return toast.error("You must be female to create an account")
 
     const userDob = moment(formData.dateOfBirth)
     const minAge = moment().subtract(16, "years")
@@ -44,15 +47,17 @@ const SignUpPage = () => {
 
     const success = validateForm()
 
-    if(success===true) signup(formData)
+    if(success===true) {
+      signup(formData)
+      navigate("/create-profile")}
   }
 
 
   return (
-    <div className=" grid place-items-center min-h-screen bg-gradient-to-r from-primary via-secondary to-accent animate-gradient bg-[length:400%_400%]">
-
-    <div className="relative z-10 card card-compact bg-base-100 w-96 shadow-xl">
-      <div className="flex flex-col justify-center items-center p-6">
+    <div className=" w-full min-h-screen flex items-center justify-center bg-gradient-to-r from-primary via-secondary to-accent animate-gradient bg-[length:400%_400%] ">
+      <div className="max-w-2xl mx-auto p-4 py-4">
+    <div className="p-4 space-y-8 card card-compact bg-base-100 w-full shadow-xl">
+      <div className="flex flex-col items-center">
         
         <div className="w-full max-w-md space-y-8">
           
@@ -138,6 +143,16 @@ const SignUpPage = () => {
                 </button>
               </label>
               </div>
+              <div className="form-control">
+                
+                <label className="label cursor-pointer flex justify-start space-x-2">
+                   <input type="checkbox" className="checkbox checkbox-primary" onClick={() => setIsFemale(!isFemale)}/>
+                  <span className="label-text text-left">I confirm that I am Female</span>
+                 
+                  
+                  
+                </label>
+              </div>
 
 
               <div className="flex justify-center">
@@ -145,6 +160,7 @@ const SignUpPage = () => {
                 {isSigningUp ? (
                   <>
                     <Loader2 className="size-5 animate-spin" />
+                    Loading...
                   </>
                 ) : ("Create Account")}
               </button>
@@ -162,6 +178,7 @@ const SignUpPage = () => {
 
         </div>
       </div>  
+    </div>
     </div>
     </div>
   )

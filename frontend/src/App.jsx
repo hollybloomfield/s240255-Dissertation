@@ -3,15 +3,18 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import ProfilePage from "./pages/ProfilePage";
+import EditProfilePage from "./pages/EditProfilePage";
+import CreateProfilePage from "./pages/CreateProfilePage";
 
 import Navbar from "./Components/Navbar";
 import BottomNavbar from "./Components/BottomNavbar";
 import { useAuthStore } from "./store/useAuthStore";
 import { useEffect } from "react";
 
+
 import {Loader} from "lucide-react";
 import {Toaster} from "react-hot-toast";
+
 
 
 const App = () => {
@@ -30,8 +33,9 @@ const App = () => {
 
   return (
     //PADDING FOR IOS AND MOBILE PHONE VIEW, MAYBE HAVE TO CHANGE
-  <main>
+  <main data-theme="Festie">
     <Navbar />
+  
 
     <Routes>
 
@@ -39,7 +43,8 @@ const App = () => {
       <Route path="/" element={authUser ? <HomePage/> : <Navigate to="/login"/>}/>
       <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to="/"/>}/>
       <Route path="/login" element={!authUser ? <LoginPage/> : <Navigate to="/"/>}/>
-      <Route path="/profile" element={ authUser ? <ProfilePage/> : <Navigate to="/login"/>}/>
+      <Route path="/edit-profile" element={ authUser ? <EditProfilePage/> : <Navigate to="/login"/>}/>
+      <Route path="/create-profile" element={ authUser ? <CreateProfilePage/> : <Navigate to="/create-profile"/>}/>
 
     </Routes>
 
