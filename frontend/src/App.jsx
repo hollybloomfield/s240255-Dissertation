@@ -5,6 +5,7 @@ import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import CreateProfilePage from "./pages/CreateProfilePage";
+import FestivalsPage from "./pages/FestivalsPage";
 
 import Navbar from "./Components/Navbar";
 import BottomNavbar from "./Components/BottomNavbar";
@@ -14,6 +15,8 @@ import { useEffect } from "react";
 
 import {Loader} from "lucide-react";
 import {Toaster} from "react-hot-toast";
+import SettingsPage from "./pages/SettingsPage";
+
 
 
 
@@ -44,13 +47,15 @@ const App = () => {
       <Route path="/signup" element={!authUser ? <SignUpPage/> : <Navigate to="/"/>}/>
       <Route path="/login" element={!authUser ? <LoginPage/> : <Navigate to="/"/>}/>
       <Route path="/edit-profile" element={ authUser ? <EditProfilePage/> : <Navigate to="/login"/>}/>
-      <Route path="/create-profile" element={ authUser ? <CreateProfilePage/> : <Navigate to="/create-profile"/>}/>
+      <Route path="/create-profile" element={ authUser ? <CreateProfilePage/> : <Navigate to="/login"/>}/>
+      <Route path="/festivals" element={ authUser ? <FestivalsPage/> : <Navigate to="/login"/>}/>
+      <Route path="/settings" element={ authUser ? <SettingsPage/> : <Navigate to="/login"/>}/>
 
     </Routes>
 
     <Toaster />
 
-    {/* <BottomNavbar /> */}
+    <BottomNavbar />
 
 
   </main>

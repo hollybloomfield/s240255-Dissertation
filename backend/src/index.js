@@ -5,6 +5,7 @@ import cors from "cors";
 
 import {connectDB} from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
+import festivalsRoutes from "./routes/festivals.route.js";
 
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(cors({
 ))
 
 app.use("/api/auth", authRoutes)
+app.use("/api/festivals", festivalsRoutes)
 
 app.listen(PORT, () => {
     console.log("server is running on PORT:" + PORT);

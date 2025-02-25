@@ -1,19 +1,41 @@
 import { House, MessageSquare, Search } from "lucide-react"
+import { NavLink, useLocation } from "react-router-dom"
+import { useAuthStore } from "../store/useAuthStore"
 
 const BottomNavbar = () => {
+const { authUser} = useAuthStore()
+const location = useLocation()
+
+const hiddenRoutes = ["/edit-profile", "/create-profile"]
+
+if (!authUser || hiddenRoutes.includes(location.pathname)){
+  return null
+}
   return (
     
     <div className="btm-nav btm-nav-lg border-t fixed bottom-0 left-0 right-0">
       
-  <button className="text-primary">
-  <House />
-  </button>
-  <button className="text-primary">
-  <Search />
-  </button>
-  <button className="text-primary active">
-  <MessageSquare />  
-  </button>
+      <NavLink
+        to="/" 
+        className="text-primary"
+        activeClassName="active" 
+      >
+        <House />
+      </NavLink>
+      <NavLink
+        to="/festivals" 
+        className="text-primary"
+        activeClassName="active" 
+      >
+        <Search />
+      </NavLink>
+      <NavLink
+        to="/messages" 
+        className="text-primary"
+        activeClassName="active" 
+      >
+        <MessageSquare />
+      </NavLink>
 </div>
   )
 }
