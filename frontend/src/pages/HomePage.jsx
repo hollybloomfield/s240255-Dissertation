@@ -4,7 +4,7 @@ const HomePage = () => {
   const {authUser} = useAuthStore()
 
   return (
-    <div className="pt-[79px] w-full min-h-screen flex flex-col items-center">
+    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center">
       <div className="max-w-2xl w-full mx-auto p-2 space-y-3">
         <div className="text-left">
         <h1 className="text-2xl">Welcome back, {authUser.firstName}! </h1>

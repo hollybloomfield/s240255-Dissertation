@@ -1,6 +1,159 @@
+import {CalendarDays, Loader, MapPin, SlidersHorizontal, Sparkles} from "lucide-react";
+import axios from "axios";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useFestivalStore } from "../store/useFestivalStore";
+
+
+
 const FestivalsPage = () => {
+  const {fetchFestivals, isLoading, festivals, hasMore, resetFestivalList, searchFestivals, isSearching} = useFestivalStore();
+  const observer = useRef(null);
+  const [keyword, setKeyword] = useState("")
+
+  const lastFestivalRef = useCallback((node) => {
+    if (isLoading || isSearching) return;
+
+    if (observer.current) observer.current.disconnect() //removes any observers to avoid duplication
+
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && hasMore) { //check if last festival is visible and if there are more to load
+        fetchFestivals(); //API call
+      }
+    })
+
+    if (node) observer.current.observe(node) //attach observer to the last festival item
+
+
+    }, [isLoading, hasMore, fetchFestivals])
+
+  useEffect(() => {
+    fetchFestivals(); // Fetch festivals on component mount
+  }, [fetchFestivals]);
+
+  useEffect(() => {
+    return () => {
+      resetFestivalList(); // Clear the festival list when navigating away
+    };
+  }, []);
+
+  const handleSearchSubmit = async (e) => {
+    e.preventDefault()
+    searchFestivals(keyword)
+  }
+
+  const handleAttendanceClick = async(e) => {
+
+  }
+
+  const handleUsersAttendingClick = async(e) => {
+
+  }
+  
+
+
+
   return (
-    <div className="pt-[79px] w-full min-h-screen flex flex-col items-center">FestivalsPage</div>
+    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center ">
+    
+    <div className="sticky top-[79px] bg-base-100 z-[5] w-full"> 
+      <div className="flex gap-0.5 p-1">
+      <form onSubmit={handleSearchSubmit} className="flex w-full">
+        <label className="input input-bordered flex items-center gap-2 w-full">
+  <input 
+    type="text" 
+    className="grow" 
+    placeholder="Search Festivals"
+    value={keyword}
+    onChange={(e) => setKeyword(e.target.value)} />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 16 16"
+    fill="currentColor"
+    className="h-4 w-4 opacity-70"
+    onClick={handleSearchSubmit}>
+    <path
+      fillRule="evenodd"
+      d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+      clipRule="evenodd" />
+  </svg>
+</label>
+</form>
+      <button className="btn btn-square btn-ghost">
+        <SlidersHorizontal/>
+      </button>
+      </div>
+
+      <div className="text-center bg-accent/60 w-full">
+        <h1 className="text-xl">Upcoming Festivals </h1>
+        </div>
+</div> 
+<div className=" w-full mx-auto p-2 space-y-3">
+<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
+
+
+{festivals.map((festival, index) => (
+<div 
+  key={festival.id}
+  ref={index === festivals.length - 1 ? lastFestivalRef : null}
+  className="card w-full sm:w-80 max-w-xs bg-base-100 shadow-lg">
+  
+  <figure className="px-4 pt-4 flex justify-center">
+    <div className="w-48">
+    <img
+      className="rounded-lg w-full aspect-square object-cover"
+      src={festival.largeimageurl}
+      alt="Festival"
+      loading="lazy"
+    /></div>
+  </figure>
+
+  {/* Content Section */}
+  <div className="card-body p-4 bg-secondary/10 rounded-lg">
+  <div className="flex flex-wrap justify-between gap-2">
+  <h2 className="card-title text-xl font-bold">{festival.eventname}</h2>
+  <button
+        className="btn btn-sm btn-secondary rounded-full"
+        onClick={handleAttendanceClick}
+        >
+        I'm Attending!
+      </button>
+  </div>
+    
+    
+    <div className="flex flex-col flex-grow gap-2 text-sm">
+      <div className="flex items-center gap-2">
+        <CalendarDays className="h-5 w-5 text-gray-500" />
+        <p>{new Date(festival.startdate).toLocaleDateString()} - {new Date(festival.enddate).toLocaleDateString()} </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <MapPin className="h-5 w-5 text-gray-500" />
+        <p>{festival.venue.town}</p>
+      </div>
+    
+    </div>
+
+    {/* Toggle Button */}
+    <div className="card-actions mt-3 justify-center">
+    <button 
+    className="btn btn-outline btn-sm btn-primary bg-base-100 rounded-full"
+    onClick={handleUsersAttendingClick}>See Who's Going!</button>
+    </div>
+  </div>
+</div>
+))}
+
+</div>
+
+ {isLoading &&  <div className="flex items-center justify-center gap-1">
+  <Loader className="size-5 animate-spin "/>
+  <p>Loading festivals</p>
+  </div>}
+
+
+{!hasMore && !isLoading && <p className="text-center">No more results</p>}
+
+    </div>
+  </div>
   )
 }
 
