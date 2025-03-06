@@ -59,7 +59,13 @@ const userSchema = new mongoose.Schema(
                 default: "",
 
             },
-        }
+        },
+        attendingFestivals: {
+            type: [String],
+            default: []
+        },
+            
+        
     },
     { timestamps: true }
 );

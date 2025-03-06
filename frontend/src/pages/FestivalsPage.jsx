@@ -1,14 +1,19 @@
-import {CalendarDays, Loader, MapPin, SlidersHorizontal, Sparkles} from "lucide-react";
-import axios from "axios";
+import {CalendarDays, Check, Loader, MapPin, Plus, SlidersHorizontal, Sparkles} from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFestivalStore } from "../store/useFestivalStore";
+import { useAuthStore } from "../store/useAuthStore";
+import { useNavigate } from "react-router-dom";
 
 
 
 const FestivalsPage = () => {
-  const {fetchFestivals, isLoading, festivals, hasMore, resetFestivalList, searchFestivals, isSearching} = useFestivalStore();
+  const {notAttendingFestival, attendingFestival, fetchFestivals, isLoading, festivals, hasMore, resetFestivalList, searchFestivals, isSearching} = useFestivalStore();
+  const {authUser} = useAuthStore();
   const observer = useRef(null);
   const [keyword, setKeyword] = useState("")
+  const navigate = useNavigate()
+
+  const [attendingFestivals, setAttendingFestivals] = useState(authUser.attendingFestivals)
 
   const lastFestivalRef = useCallback((node) => {
     if (isLoading || isSearching) return;
@@ -38,22 +43,45 @@ const FestivalsPage = () => {
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault()
-    searchFestivals(keyword)
+    await searchFestivals(keyword)
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth', // This makes the scroll smooth
+    });
   }
-
-  const handleAttendanceClick = async(e) => {
+  //gets the festivals stored in the auth user adn also adds the extra one onto it to reflect instant changes
+  const handleAttendanceClick = async(e, festivalId, isAttending) => {
+      e.preventDefault()
+      
+      const previousAttendingFestivals = [...attendingFestivals]
+      try {
+        if (isAttending) {
+          console.log("festival Id: ", festivalId)
+        await notAttendingFestival(festivalId)
+        setAttendingFestivals(prev => prev.filter(id => id !== festivalId));
+      } else if (!isAttending) {
+        await attendingFestival(festivalId)
+      setAttendingFestivals(prev => [...prev, festivalId]);
+      }
+      } catch (error) {
+        setAttendingFestivals(previousAttendingFestivals)
+        console.log("error in handleattendanceclick: ", error)
+      }
 
   }
+  useEffect(() => {
+    setAttendingFestivals(authUser.attendingFestivals);
+  }, [authUser.attendingFestivals]);
 
-  const handleUsersAttendingClick = async(e) => {
-
+  const handleUsersAttendingClick = async(festivalId) => {
+    navigate(`/${festivalId}/attendees`)
   }
   
 
 
 
   return (
-    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center ">
+    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center bg-secondary/60">
     
     <div className="sticky top-[79px] bg-base-100 z-[5] w-full"> 
       <div className="flex gap-0.5 p-1">
@@ -91,7 +119,11 @@ const FestivalsPage = () => {
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
 
 
-{festivals.map((festival, index) => (
+{festivals.map((festival, index) => { 
+  
+  const isAttending = attendingFestivals.includes(festival.id)
+  
+  return(
 <div 
   key={festival.id}
   ref={index === festivals.length - 1 ? lastFestivalRef : null}
@@ -107,16 +139,24 @@ const FestivalsPage = () => {
     /></div>
   </figure>
 
-  {/* Content Section */}
   <div className="card-body p-4 bg-secondary/10 rounded-lg">
   <div className="flex flex-wrap justify-between gap-2">
   <h2 className="card-title text-xl font-bold">{festival.eventname}</h2>
+
   <button
-        className="btn btn-sm btn-secondary rounded-full"
-        onClick={handleAttendanceClick}
-        >
-        I'm Attending!
-      </button>
+    className={`btn btn-sm rounded-full ${isAttending ? ' btn-accent ' : 'btn-secondary'}`}
+    onClick={(e) => handleAttendanceClick(e, festival.id, isAttending)}
+  >
+      {isAttending ? (
+    <>
+      <Check className="w-5" />Attending
+    </>
+  ) : (
+    <>
+      <Plus className="w-5" />Attend
+    </>
+  )}
+  </button>
   </div>
     
     
@@ -129,22 +169,22 @@ const FestivalsPage = () => {
         <MapPin className="h-5 w-5 text-gray-500" />
         <p>{festival.venue.town}</p>
       </div>
-    
     </div>
 
-    {/* Toggle Button */}
+    
     <div className="card-actions mt-3 justify-center">
     <button 
     className="btn btn-outline btn-sm btn-primary bg-base-100 rounded-full"
-    onClick={handleUsersAttendingClick}>See Who's Going!</button>
+    onClick={() => handleUsersAttendingClick(festival.id)}>See Who's Going!</button>
     </div>
   </div>
 </div>
-))}
+)
+})}
 
 </div>
 
- {isLoading &&  <div className="flex items-center justify-center gap-1">
+ {isLoading &&  <div className="flex items-center justify-center gap-1 text-primary">
   <Loader className="size-5 animate-spin "/>
   <p>Loading festivals</p>
   </div>}

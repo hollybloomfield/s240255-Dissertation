@@ -10,10 +10,11 @@ export const useFestivalStore = create((set, get) =>({
     hasMore: true,
     limit: 30,
     isSearching: false,
-
+    maxFestivals: 50,
+    
 
     fetchFestivals: async () => {
-        const {offset, festivals, hasMore, limit} = get()
+        const {offset, festivals, hasMore, limit, maxFestivals} = get()
 
         if (!hasMore) return; //if theres no more festivals then return nothing
 
@@ -31,7 +32,7 @@ export const useFestivalStore = create((set, get) =>({
             
 
             set({
-                festivals: [...festivals, ...res.data.festivals], 
+                festivals: [...festivals, ...res.data.festivals].slice(-maxFestivals), //limits festival store to 50 festivals for performance and keeps the most recently loaded ones.
                 //appending the festival data onto the festival array
                 offset: offset+limit, //increasing the offset to remove duplication
                 
@@ -72,6 +73,29 @@ export const useFestivalStore = create((set, get) =>({
         }
     },
 
+    attendingFestival: async (festivalId) => {
+       
+        try {
+            await axiosInstance.post("/festivals/attending-festival", {festivalId})
+            toast.success("Festival added")
+        } catch (error) {
+            toast.error("Error adding festival")
+            console.log("Error adding festival attendance: ", error)
+            throw error //throw error so the error can be caught in handleattendanceclick
+        }
+    },
+
+    notAttendingFestival: async (festivalId) => {
+        try {
+            console.log("festival Id in store:",festivalId)
+            await axiosInstance.delete("/festivals/not-attending-festival", {data: {festivalId}})
+            toast.success("Festival Removed")
+        } catch (error) {
+            toast.error("Error removing festival")
+            console.log("Error removing festival attendance: ", error)
+            throw error
+        }
+    }
 
     
     //want state for toggling button and keeping state of festival id's that user is attending

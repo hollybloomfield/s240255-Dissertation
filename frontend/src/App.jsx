@@ -16,6 +16,7 @@ import { useEffect } from "react";
 import {Loader} from "lucide-react";
 import {Toaster} from "react-hot-toast";
 import SettingsPage from "./pages/SettingsPage";
+import FestivalAttendeesPage from "./pages/FestivalAttendeesPage";
 
 
 
@@ -50,6 +51,7 @@ const App = () => {
       <Route path="/create-profile" element={ authUser ? <CreateProfilePage/> : <Navigate to="/login"/>}/>
       <Route path="/festivals" element={ authUser ? <FestivalsPage/> : <Navigate to="/login"/>}/>
       <Route path="/settings" element={ authUser ? <SettingsPage/> : <Navigate to="/login"/>}/>
+      <Route path="/:festivalId/attendees" element={ authUser ? <FestivalAttendeesPage/> : <Navigate to="/login"/>}/>
 
     </Routes>
 

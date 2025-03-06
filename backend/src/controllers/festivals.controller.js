@@ -1,5 +1,6 @@
 import axios from "axios";
 import moment from "moment";
+import User from "../models/user.model.js";
 
 export const getAllFestivals = async (req,res) => {
     try {
@@ -80,4 +81,73 @@ export const searchFestivals = async (req,res) => {
     }
     
 
+};
+
+export const attendingFestival = async (req,res) => {
+    try {
+        const {festivalId} = req.body
+        
+
+        if (!festivalId) {
+            return res.status(400).json({message: "No Festival ID provided"})
+        }
+
+        if (req.user.attendingFestivals.includes(festivalId)){
+            return res.status(400).json({message: "Festival is already marked as attending"})
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user._id, 
+            { $push: { attendingFestivals: festivalId } }, 
+            { new: true } 
+          );
+
+        res.status(200).json({ message: "Festival added to attending list", user: updatedUser });
+
+        
+    } catch (error) {
+        console.error("Error in attendingFestival controller:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const notAttendingFestival = async (req,res) => {
+    try {
+        const {festivalId} = req.body
+
+        if (!festivalId) {
+            return res.status(400).json({message: "No Festival ID provided"})
+        }
+         if (!req.user.attendingFestivals.includes(festivalId)){
+            return res.status(400).json({message: "Festival is not in attending list"})
+        }
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user._id,
+            { $pull: { attendingFestivals: festivalId } }, // Pull festivalId from the array and delete
+            { new: true } 
+        );
+        res.status(200).json({ message: "Festival removed from attending list", user: updatedUser });
+
+    } catch (error) {
+        console.error("Error in notAttendingFestival controller:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+export const getFestival = async (req,res) => {
+    try {
+        const {festivalId} = req.body
+
+        const response = await axios.get(`https://www.skiddle.com/api/v1/events/${festivalId}/`, {
+            params: {
+                api_key: process.env.SKIDDLE_API_KEY,
+            }
+        })
+            const festival = response.data
+
+        res.status(200).json({festival})
+    } catch (error) {
+        console.error("Error in getFestival controller:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
 };

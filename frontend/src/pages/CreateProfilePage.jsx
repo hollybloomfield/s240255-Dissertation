@@ -51,9 +51,11 @@ const CreateProfilePage = () => {
           }
         })
 
-        navigate("/")
+        
         } catch (error) {
             console.log("error updating profile", error)
+        } finally {
+          navigate("/")
         }
     
        

@@ -42,13 +42,14 @@ const SignUpPage = () => {
   }
 
   //stops page from refreshing and losing all data when form is submitted
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
     const success = validateForm()
-
+    
     if(success===true) {
-      signup(formData)
+      
+      await signup(formData)
       navigate("/create-profile")}
   }
 

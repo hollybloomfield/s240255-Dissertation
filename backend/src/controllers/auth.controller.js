@@ -53,6 +53,7 @@ export const signup = async (req,res) => {
                 profilePic: newUser.profilePic,
                 bio: newUser.bio,
                 preferences: newUser.preferences,
+                attendingFestivals: newUser.attendingFestivals,
             })
 
         } else {
@@ -88,6 +89,7 @@ export const login = async(req,res) => {
             profilePic: user.profilePic,
             bio: user.bio,
             preferences: user.preferences,
+            attendingFestivals: user.attendingFestivals,
         })
 
     } catch (error) {
