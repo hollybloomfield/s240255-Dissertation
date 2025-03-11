@@ -11,9 +11,10 @@ export const useFestivalStore = create((set, get) =>({
     limit: 30,
     isSearching: false,
     maxFestivals: 50,
+
     
 
-    fetchFestivals: async () => {
+    getFestivals: async () => {
         const {offset, festivals, hasMore, limit, maxFestivals} = get()
 
         if (!hasMore) return; //if theres no more festivals then return nothing
@@ -95,9 +96,9 @@ export const useFestivalStore = create((set, get) =>({
             console.log("Error removing festival attendance: ", error)
             throw error
         }
-    }
+    },
 
-    
+      
     //want state for toggling button and keeping state of festival id's that user is attending
     //also want state for using the festival id to navigate to the correct users attending page
 }))

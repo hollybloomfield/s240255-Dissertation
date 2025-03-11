@@ -36,7 +36,7 @@ export const getAllFestivals = async (req,res) => {
 
         res.status(200).json({ festivals: festivals})
     } catch (error) {
-        console.error("Error in getallfestivals controller:", error)
+        console.log("Error in getallfestivals controller:", error)
         res.status(500).json({message: "Internal server error"})
     }
 };
@@ -76,7 +76,7 @@ export const searchFestivals = async (req,res) => {
 
         res.status(200).json({ festivals: festivals})
     } catch (error) {
-        console.error("Error in searchFestivals controller:", error)
+        console.log("Error in searchFestivals controller:", error)
         res.status(500).json({message: "Internal server error"})
     }
     
@@ -106,7 +106,7 @@ export const attendingFestival = async (req,res) => {
 
         
     } catch (error) {
-        console.error("Error in attendingFestival controller:", error);
+        console.log("Error in attendingFestival controller:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
@@ -129,14 +129,14 @@ export const notAttendingFestival = async (req,res) => {
         res.status(200).json({ message: "Festival removed from attending list", user: updatedUser });
 
     } catch (error) {
-        console.error("Error in notAttendingFestival controller:", error);
+        console.log("Error in notAttendingFestival controller:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
 
 export const getFestival = async (req,res) => {
     try {
-        const {festivalId} = req.body
+        const {festivalId} = req.query
 
         const response = await axios.get(`https://www.skiddle.com/api/v1/events/${festivalId}/`, {
             params: {
@@ -147,7 +147,25 @@ export const getFestival = async (req,res) => {
 
         res.status(200).json({festival})
     } catch (error) {
-        console.error("Error in getFestival controller:", error);
+        console.log("Error in getFestival controller:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const getAttendees = async (req,res) => {
+    try {
+        const {festivalId} = req.query //gets Festival Id from the request
+        const userId = req.user._id //gets current user Id from the request
+    
+        const attendees = await User.find(
+            {attendingFestivals: festivalId, _id: { $ne: userId }}, //finds users which match festival Id in Attending festivals
+                                                                    //removes current user from response 
+            {email: 0, password:0}                                  //does not send email or password in the response
+        )
+
+        res.status(200).json(attendees) //response contains array of attendees found in user database
+    } catch (error) {
+        console.log("Error in getAttendees controller:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}

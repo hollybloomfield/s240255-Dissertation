@@ -7,13 +7,14 @@ import { useNavigate } from "react-router-dom";
 
 
 const FestivalsPage = () => {
-  const {notAttendingFestival, attendingFestival, fetchFestivals, isLoading, festivals, hasMore, resetFestivalList, searchFestivals, isSearching} = useFestivalStore();
+  const {notAttendingFestival, attendingFestival, getFestivals, isLoading, festivals, hasMore, resetFestivalList, searchFestivals, isSearching} = useFestivalStore();
   const {authUser} = useAuthStore();
   const observer = useRef(null);
   const [keyword, setKeyword] = useState("")
   const navigate = useNavigate()
 
   const [attendingFestivals, setAttendingFestivals] = useState(authUser.attendingFestivals)
+
 
   const lastFestivalRef = useCallback((node) => {
     if (isLoading || isSearching) return;
@@ -22,22 +23,22 @@ const FestivalsPage = () => {
 
     observer.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasMore) { //check if last festival is visible and if there are more to load
-        fetchFestivals(); //API call
+        getFestivals(); //API call
       }
     })
 
     if (node) observer.current.observe(node) //attach observer to the last festival item
 
 
-    }, [isLoading, hasMore, fetchFestivals])
+    }, [isLoading, hasMore, getFestivals])
 
   useEffect(() => {
-    fetchFestivals(); // Fetch festivals on component mount
-  }, [fetchFestivals]);
+    getFestivals(); // get festivals on component mount
+  }, [getFestivals]);
 
   useEffect(() => {
     return () => {
-      resetFestivalList(); // Clear the festival list when navigating away
+      resetFestivalList(); // Clear festival list when navigating to another page
     };
   }, []);
 
@@ -46,7 +47,7 @@ const FestivalsPage = () => {
     await searchFestivals(keyword)
     window.scrollTo({
       top: 0,
-      behavior: 'smooth', // This makes the scroll smooth
+      behavior: 'smooth', 
     });
   }
   //gets the festivals stored in the auth user adn also adds the extra one onto it to reflect instant changes
@@ -56,17 +57,20 @@ const FestivalsPage = () => {
       const previousAttendingFestivals = [...attendingFestivals]
       try {
         if (isAttending) {
-          console.log("festival Id: ", festivalId)
+        setAttendingFestivals(prev => prev.filter(id => id !== festivalId)); 
         await notAttendingFestival(festivalId)
-        setAttendingFestivals(prev => prev.filter(id => id !== festivalId));
-      } else if (!isAttending) {
+        
+      } else {
+        setAttendingFestivals(prev => [...prev, festivalId]);
         await attendingFestival(festivalId)
-      setAttendingFestivals(prev => [...prev, festivalId]);
+      
       }
       } catch (error) {
         setAttendingFestivals(previousAttendingFestivals)
         console.log("error in handleattendanceclick: ", error)
       }
+
+    
 
   }
   useEffect(() => {
@@ -74,7 +78,7 @@ const FestivalsPage = () => {
   }, [authUser.attendingFestivals]);
 
   const handleUsersAttendingClick = async(festivalId) => {
-    navigate(`/${festivalId}/attendees`)
+    navigate(`/festivals/${festivalId}/attendees`)
   }
   
 
@@ -83,7 +87,7 @@ const FestivalsPage = () => {
   return (
     <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center bg-secondary/60">
     
-    <div className="sticky top-[79px] bg-base-100 z-[5] w-full"> 
+    <div className="sticky top-[78px] bg-base-100 z-[5] w-full"> 
       <div className="flex gap-0.5 p-1">
       <form onSubmit={handleSearchSubmit} className="flex w-full">
         <label className="input input-bordered flex items-center gap-2 w-full">
@@ -162,13 +166,14 @@ const FestivalsPage = () => {
     
     <div className="flex flex-col flex-grow gap-2 text-sm">
       <div className="flex items-center gap-2">
-        <CalendarDays className="h-5 w-5 text-gray-500" />
+        <CalendarDays className="h-5 w-5 text-primary" />
         <p>{new Date(festival.startdate).toLocaleDateString()} - {new Date(festival.enddate).toLocaleDateString()} </p>
       </div>
       <div className="flex items-center gap-2">
-        <MapPin className="h-5 w-5 text-gray-500" />
+        <MapPin className="h-5 w-5 text-primary" />
         <p>{festival.venue.town}</p>
       </div>
+     
     </div>
 
     

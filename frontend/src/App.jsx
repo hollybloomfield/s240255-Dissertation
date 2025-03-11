@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 import HomePage from "./pages/HomePage";
 import SignUpPage from "./pages/SignUpPage";
@@ -25,8 +25,8 @@ const App = () => {
   const {authUser, checkAuth, isCheckingAuth} = useAuthStore()
   useEffect(() => {
     checkAuth();
-  }, [checkAuth])
-  console.log({authUser})
+  }, [checkAuth, useLocation()])
+  
 
   //shows loading icon when application is refreshed while its checking authentication
   if(isCheckingAuth && !authUser) return (
@@ -51,7 +51,7 @@ const App = () => {
       <Route path="/create-profile" element={ authUser ? <CreateProfilePage/> : <Navigate to="/login"/>}/>
       <Route path="/festivals" element={ authUser ? <FestivalsPage/> : <Navigate to="/login"/>}/>
       <Route path="/settings" element={ authUser ? <SettingsPage/> : <Navigate to="/login"/>}/>
-      <Route path="/:festivalId/attendees" element={ authUser ? <FestivalAttendeesPage/> : <Navigate to="/login"/>}/>
+      <Route path="/festivals/:festivalId/attendees" element={ authUser ? <FestivalAttendeesPage/> : <Navigate to="/login"/>}/>
 
     </Routes>
 

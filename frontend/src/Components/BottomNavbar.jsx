@@ -17,22 +17,22 @@ if (!authUser || hiddenRoutes.includes(location.pathname)){
       
       <NavLink
         to="/" 
-        className="text-primary"
-        activeClassName="active" 
+        className={({ isActive }) => (isActive ? "text-primary active" : "text-primary")}
+        
       >
         <House />
       </NavLink>
       <NavLink
         to="/festivals" 
-        className="text-primary"
-        activeClassName="active" 
+        className={({ isActive }) =>
+          isActive || location.pathname.startsWith("/festivals") ? "text-primary active" : "text-primary"
+        }
       >
         <Search />
       </NavLink>
       <NavLink
         to="/messages" 
-        className="text-primary"
-        activeClassName="active" 
+        className={({ isActive }) => (isActive ? "text-primary active" : "text-primary")}
       >
         <MessageSquare />
       </NavLink>
