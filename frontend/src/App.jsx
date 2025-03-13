@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import EditProfilePage from "./pages/EditProfilePage";
 import CreateProfilePage from "./pages/CreateProfilePage";
 import FestivalsPage from "./pages/FestivalsPage";
+import MessagesPage from "./pages/MessagesPage";
 
 import Navbar from "./Components/Navbar";
 import BottomNavbar from "./Components/BottomNavbar";
@@ -22,7 +23,10 @@ import FestivalAttendeesPage from "./pages/FestivalAttendeesPage";
 
 
 const App = () => {
-  const {authUser, checkAuth, isCheckingAuth} = useAuthStore()
+  const {authUser, checkAuth, isCheckingAuth, onlineUsers} = useAuthStore()
+
+  console.log({onlineUsers})
+
   useEffect(() => {
     checkAuth();
   }, [checkAuth, useLocation()])
@@ -52,7 +56,7 @@ const App = () => {
       <Route path="/festivals" element={ authUser ? <FestivalsPage/> : <Navigate to="/login"/>}/>
       <Route path="/settings" element={ authUser ? <SettingsPage/> : <Navigate to="/login"/>}/>
       <Route path="/festivals/:festivalId/attendees" element={ authUser ? <FestivalAttendeesPage/> : <Navigate to="/login"/>}/>
-
+      <Route path="/messages" element={ authUser ? <MessagesPage/> : <Navigate to="/login"/>}/>
     </Routes>
 
     <Toaster />

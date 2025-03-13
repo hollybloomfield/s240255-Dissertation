@@ -64,6 +64,10 @@ const userSchema = new mongoose.Schema(
             type: [String],
             default: []
         },
+        activeChats: {
+            type: [mongoose.Schema.Types.ObjectId],
+            default: []
+        }
             
         
     },
