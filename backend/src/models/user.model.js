@@ -63,13 +63,7 @@ const userSchema = new mongoose.Schema(
         attendingFestivals: {
             type: [String],
             default: []
-        },
-        activeChats: {
-            type: [mongoose.Schema.Types.ObjectId],
-            default: []
-        }
-            
-        
+        },     
     },
     { timestamps: true }
 );
