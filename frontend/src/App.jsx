@@ -23,9 +23,8 @@ import FestivalAttendeesPage from "./pages/FestivalAttendeesPage";
 
 
 const App = () => {
-  const {authUser, checkAuth, isCheckingAuth, onlineUsers} = useAuthStore()
+  const {authUser, checkAuth, isCheckingAuth} = useAuthStore()
 
-  console.log({onlineUsers})
 
   useEffect(() => {
     checkAuth();

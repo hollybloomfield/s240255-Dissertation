@@ -100,18 +100,18 @@ export const useAuthStore = create((set, get) => ({
             query: {
                 userId: authUser._id,
             },
-        })
+        }) //sending the user Id in the query of the socket
 
-        socket.connect()
+        socket.connect() //connect to socket in backend
 
         set({socket:socket})
 
         socket.on("getOnlineUsers", (userIds) => {
             set({onlineUsers: userIds})
-        })
+        }) //calling getOnlineUsers which emits the array of online users to all clients
     },
 
     disconnectSocket: () => {
-        if(get().socket?.connected) get().socket.disconnect()
+        if(get().socket?.connected) get().socket.disconnect() 
     },
 }))

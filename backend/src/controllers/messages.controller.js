@@ -1,6 +1,9 @@
 import Chats from "../models/chats.model.js"
 import Message from "../models/message.model.js";
 import User from "../models/user.model.js"
+import cloudinary from "../lib/cloudinary.js"
+import { getReceiverSocketId, io } from "../lib/socket.js";
+
 
 
 export const getChatUsers = async (req,res) => {
@@ -25,7 +28,7 @@ export const getChatUsers = async (req,res) => {
         console.log("Error in getChatUsers: ", error.message)
         res.status(500).json({error: "Internal server error"})
     }  
-};
+}; //gets chats matching current userId and returns the other userId
 
 export const getMessages = async (req,res) => {
     try {
@@ -44,7 +47,7 @@ export const getMessages = async (req,res) => {
         console.log("Error in getMessages controller: ", error.message)
         res.status(500).json({ error: "Internal server error"})
     }
-};
+}; //gets messages between current user and another user
 
 export const sendMessage = async (req,res) => {
     try {
@@ -68,7 +71,11 @@ export const sendMessage = async (req,res) => {
 
         await newMessage.save()
 
-        // to do: real time functionality with socket.io
+        
+        const receiverSocketId = getReceiverSocketId(receiverId) //using receiver id passed in params to get their socketId
+        if(receiverSocketId) {
+            io.to(receiverSocketId).emit("newMessage", newMessage) //only broadcasting it to receiverId
+        } //if user is online send the event in real-time
 
         res.status(201).json(newMessage)
 
@@ -77,4 +84,23 @@ export const sendMessage = async (req,res) => {
         console.log("Error in sendMessage controller: ", error.message)
         res.status(500).json({error: "Internal server error"})
     }
-};
+}; //adds messages to the message collection 
+
+export const newChat = async (req,res) => {
+    try {
+    const {id: user1} = req.params
+    const user2 = req.user._id
+
+    const newChat = new Chats({
+        user1,
+        user2,
+    })
+
+    await newChat.save()
+
+    res.status(201).json(newChat)
+    } catch (error) {
+        
+    }
+   
+}; //adds 2 users to the chat collection (todo: real-time functionality)

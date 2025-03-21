@@ -7,9 +7,9 @@ const ChatListSkeleton = () => {
   return (
     <aside
       className="h-full w-full sm:w-80 
-    flex flex-col transition-all duration-200 sm:border-r sm:border-primary"
+    flex flex-col transition-all duration-200 sm:border-r sm:border-primary bg-secondary/60"
     >
-      {/* Header */}
+     
       <div className="flex flex-col">
       <div className="border-b border-primary w-full p-1 bg-base-100/50">
         <div className="flex items-center gap-3 text-primary">
@@ -39,11 +39,11 @@ const ChatListSkeleton = () => {
 </label>
 
 </div>
-      {/* Skeleton Contacts */}
+     
       <div className="overflow-y-auto w-full py-1 ">
         {skeletonContacts.map((_, idx) => (
           <div key={idx} className="w-full p-3 flex items-center gap-3">
-            {/* Avatar skeleton */}
+           
             <div className="relative mx-auto lg:mx-0">
               <div className="skeleton size-14 rounded-full bg-secondary" />
             </div>
