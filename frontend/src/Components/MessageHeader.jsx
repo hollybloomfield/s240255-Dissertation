@@ -1,12 +1,30 @@
 import { useChatStore } from "../store/useChatStore"
 import {useAuthStore} from "../store/useAuthStore"
 import { X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 const MessageHeader = () => {
-const {selectedUser, setSelectedUser} = useChatStore()
+const {selectedUser, setSelectedUser, blockUser, unblockUser, blockedUsers, getBlockedUsers} = useChatStore()
+
 const {onlineUsers} = useAuthStore()
 
-//to do: add block button
+console.log("selected user in message header:", selectedUser)
+
+  useEffect(() => {
+       getBlockedUsers()
+    }, [getBlockedUsers]);
+
+const handleBlock = async (e) => {
+
+    if (blockedUsers.includes(selectedUser._id)) {
+        await unblockUser()
+    } else {
+        await blockUser()
+       
+    }
+}
+
+
   return (
     <div className="p-2.5 border-b border-base-300">
         <div className="flex items-center justify-between">
@@ -28,8 +46,9 @@ const {onlineUsers} = useAuthStore()
             </div>
             <div className="flex items-center gap-3">
             <button className="btn btn-error btn-sm text-white"
+                onClick={handleBlock}
             >
-                Block
+                {blockedUsers.includes(selectedUser._id) ? 'Unblock' : 'Block'}
             </button>
             <button className="btn btn-ghost btn-sm btn-circle"
             onClick={()=> setSelectedUser(null)}>

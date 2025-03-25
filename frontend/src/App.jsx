@@ -18,17 +18,37 @@ import {Loader} from "lucide-react";
 import {Toaster} from "react-hot-toast";
 import SettingsPage from "./pages/SettingsPage";
 import FestivalAttendeesPage from "./pages/FestivalAttendeesPage";
+import { useChatStore } from "./store/useChatStore";
 
 
 
 
 const App = () => {
-  const {authUser, checkAuth, isCheckingAuth} = useAuthStore()
+  const {authUser, checkAuth, isCheckingAuth, subscribeToNotifications, unsubscribeFromNotifications} = useAuthStore()
+  const {subscribeToBlock, unsubscribeFromBlock} = useChatStore()
 
+  useEffect(() => {
+    if(authUser){
+    subscribeToBlock(); 
+    }
+    return () => {
+      unsubscribeFromBlock(); // Unsubscribe when component unmounts
+  };
+    }, [subscribeToBlock, unsubscribeFromBlock, authUser])
 
   useEffect(() => {
     checkAuth();
   }, [checkAuth, useLocation()])
+
+  useEffect(() => {
+    if (authUser) { //subscribes to notifications across the whole application if user is logged in
+        subscribeToNotifications();
+    }
+
+    return () => {
+        unsubscribeFromNotifications(); // Unsubscribe when component unmounts
+    };
+}, [authUser]);
   
 
   //shows loading icon when application is refreshed while its checking authentication

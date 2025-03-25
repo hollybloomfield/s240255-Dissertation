@@ -2,6 +2,7 @@ import {create} from "zustand";
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import {io} from "socket.io-client";
+import { useChatStore } from "./useChatStore.js";
 
 const BASE_URL = "http://localhost:5001"
 
@@ -55,6 +56,7 @@ export const useAuthStore = create((set, get) => ({
             set({ authUser: null})
             toast.success("Logged out successfully")
             get().disconnectSocket()
+            
         } catch (error) {
             toast.error(error.response.data.message)
         }
@@ -114,4 +116,29 @@ export const useAuthStore = create((set, get) => ({
     disconnectSocket: () => {
         if(get().socket?.connected) get().socket.disconnect() 
     },
+
+    subscribeToNotifications: () => {
+        const {socket} = get()
+        if (!socket) return; //only subscribes if socket is active
+
+        socket.on("newNotification", (newMessage) =>{
+            const selectedUser = useChatStore.getState().selectedUser
+            if (selectedUser && selectedUser._id === newMessage.senderId) return; 
+            //Don't send notifications if user is already on the chat
+            toast("You have a new message!", {
+                icon: "🔔"
+            })
+        })
+    }, //subsribes to "newNotification" event
+
+    unsubscribeFromNotifications: () => {
+        const {socket} = get()
+
+        if(!socket) return;
+
+        socket.off("newNotification")
+       
+    }, //unsubsribes from "newNotification" event
+
+
 }))

@@ -5,12 +5,17 @@ import MessageInput from "./MessageInput";
 import MessageSkeleton from "./Skeletons/MessageSkeleton";
 import { useAuthStore } from "../store/useAuthStore";
 import {formatMessageTime} from "../lib/utils"
+import BlockedMessageContainer from "./BlockedMessageContainer";
+import BlockedMessageInput from "./BlockedMessageInput";
 
 
 const MessageContainer = () => {
-  const {messages, getMessages, isMessagesLoading, selectedUser, subscribeToMessages, unsubscribeFromMessages}=useChatStore()
+  const {messages, getMessages, isMessagesLoading, selectedUser, 
+    subscribeToMessages, unsubscribeFromMessages, blockedUsers}=useChatStore()
   const {authUser} = useAuthStore()
   const messageEndRef = useRef(null)
+
+  console.log("selected user in message container:", selectedUser)
     
   useEffect(() => {
       getMessages(selectedUser._id)
@@ -18,7 +23,7 @@ const MessageContainer = () => {
       subscribeToMessages()
 
       return () => unsubscribeFromMessages()
-    }, [selectedUser._id, getMessages, subscribeToMessages, unsubscribeFromMessages]) //useEffect runs if any of these change
+    }, [selectedUser._id, getMessages]) //useEffect runs if any of these change
     //useEffect unsubscribes from messages if it returns
 
   useEffect(()=>{
@@ -26,11 +31,6 @@ const MessageContainer = () => {
     messageEndRef.current.scrollIntoView({behavior: "smooth"})} //scroll to end of messages
   },[messages])
 
-  
-
-  
-
-  
   if(isMessagesLoading) { return (
     <div className="flex-1 flex flex-col overflow-auto">
       <MessageHeader/>
@@ -38,7 +38,16 @@ const MessageContainer = () => {
       <MessageInput/>
     </div>
   )}
+
+  if(blockedUsers.includes(selectedUser._id) || selectedUser.blockedUsers.includes(authUser._id)) { return (
+    <div className="flex-1 flex flex-col overflow-auto h-full">
+      <MessageHeader/>
+      <BlockedMessageContainer/>
+      <BlockedMessageInput/>
+    </div>
+  )}
   
+
 
   return (
     <div className="flex-1 flex flex-col overflow-auto h-full">

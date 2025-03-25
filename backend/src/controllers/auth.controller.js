@@ -54,6 +54,7 @@ export const signup = async (req,res) => {
                 bio: newUser.bio,
                 preferences: newUser.preferences,
                 attendingFestivals: newUser.attendingFestivals,
+                blockedUsers: newUser.blockedUsers,
             })
 
         } else {

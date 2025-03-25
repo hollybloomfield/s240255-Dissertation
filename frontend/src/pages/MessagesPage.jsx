@@ -2,10 +2,12 @@ import { useChatStore } from "../store/useChatStore"
 import ChatList from "../Components/ChatList"
 import NoChatSelected from "../Components/NoChatSelected"
 import MessageContainer from "../Components/MessageContainer"
+import { useEffect } from "react"
 
 const MessagesPage = () => {
-    const {selectedUser} = useChatStore()
-    console.log(selectedUser)
+    const {selectedUser, subscribeToBlock, unsubscribeFromBlock} = useChatStore()
+
+     
     
   return (
     <div className="pt-[79px] pb-[79px] w-full">

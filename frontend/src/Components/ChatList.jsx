@@ -1,20 +1,31 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useChatStore } from "../store/useChatStore"
 import ChatListSkeleton from "./Skeletons/ChatListSkeleton";
 import { Users } from "lucide-react";
 import { useAuthStore } from "../store/useAuthStore";
+import { formatMessageTime } from "../lib/utils";
 
 const ChatList = () => {
-    const {getUsers, users, isUsersLoading, selectedUser, setSelectedUser} = useChatStore()
+    const {getUsers, users, isUsersLoading, selectedUser, setSelectedUser, isNewMessage, subscribeToChats, unsubscribeFromChats} = useChatStore()
     const {onlineUsers} = useAuthStore()
-    
+
+    console.log("selected user in chatlist:", selectedUser)
 
     useEffect(()=> {
         getUsers()
+
+        subscribeToChats()
+
+        return () => unsubscribeFromChats()
+        
     },[getUsers])
 
-    if (isUsersLoading) return <ChatListSkeleton />
-
+   //sorts users only when user state changes
+    const sortedUsers = useMemo(() => {
+      return [...users].sort((a, b) => new Date(b.chatUpdatedAt) - new Date(a.chatUpdatedAt)); // sort users by chatupdatedAt
+    }, [users]);
+    console.log("sortedUsers: ", sortedUsers)
+    if (isUsersLoading && !isNewMessage) return <ChatListSkeleton /> //only shows skeleton when first loading the component
 
   return (
     <aside
@@ -53,12 +64,12 @@ const ChatList = () => {
 </div>
    
     <div className="overflow-y-auto w-full py-1">
-      {users.map((user) => (
+      {sortedUsers.map((user) => (
         <button key={user._id} 
         className={`
           w-full p-3 flex items-center gap-3
-          hover:bg-secondary hover:border-primary transition-colors border-b border-t border-secondary
-          ${selectedUser?._id === user._id ? "bg-secondary ring-1 ring-primary" : ""}
+          hover:bg-secondary transition-colors border-b  border-secondary
+          ${selectedUser?._id === user._id ? "bg-secondary" : ""}
         `}
         onClick={() => setSelectedUser(user)}>
          
@@ -76,8 +87,18 @@ const ChatList = () => {
          
           <div className="text-left min-w-0 flex-1">
             <div className="font-medium truncate">{user.firstName}</div>
-            <div className="text-sm text-primary">{onlineUsers.includes(user._id) ? "Online" : "Offline"} </div>
+            <div className="text-sm text-primary truncate">
+            {user.lastMessage === "An Image was shared" 
+              ? <span className="italic">{user.lastMessage}</span>
+              : user.lastMessage || <span className="italic">Draft</span>}
+            </div>
           </div>
+          <div className="text-xs text-primary">
+              {formatMessageTime(user.chatUpdatedAt)}
+            </div>
+
+
+
         </button>
       ))}
       {users.length === 0 && (

@@ -63,6 +63,10 @@ const userSchema = new mongoose.Schema(
         attendingFestivals: {
             type: [String],
             default: []
+        },
+        blockedUsers: {
+            type: [mongoose.Schema.Types.ObjectId],
+            default: [],
         },     
     },
     { timestamps: true }

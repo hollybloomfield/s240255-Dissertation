@@ -7,7 +7,7 @@ const MessageInput = () => {
     const [text, setText] = useState("")
     const [imagePreview, setImagePreview] = useState(null)
     const fileInputRef = useRef(null)
-    const {sendMessage} = useChatStore()
+    const {sendMessage, isMessageSending, blockedUsers, selectedUser} = useChatStore()
 
     const handleImageChange = (e) => {
         const file = e.target.files[0]
@@ -72,7 +72,9 @@ const MessageInput = () => {
                 className="w-full input input-bordered rounded-lg input-md"
                 placeholder="Type a message..."
                 value={text}
-                onChange={(e) => setText(e.target.value)}/>
+                onChange={(e) => setText(e.target.value)}
+                
+                />
                 <input
                 type="file"
                 accept="image/*"
@@ -84,7 +86,8 @@ const MessageInput = () => {
                 type="button"
                 className={`flex btn btn-circle btn-md
                     ${imagePreview ? "text-emerald-500" : "text-zinc-400"}`}
-                onClick={() => fileInputRef.current?.click()}>
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isMessageSending}>
                     <Image size={22} />
                 </button>
 
@@ -92,7 +95,7 @@ const MessageInput = () => {
             <button
             type="submit"
             className="btn btn-sm btn-circle btn-primary"
-            disabled={!text.trim() && !imagePreview}>
+            disabled={isMessageSending || (!text.trim() && !imagePreview)}>
                 <Send size={21}/>
             </button>
         </form>

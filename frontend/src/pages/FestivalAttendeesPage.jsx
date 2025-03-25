@@ -1,14 +1,17 @@
 import { CalendarDays, Loader, Mail, MapPin, SlidersHorizontal } from "lucide-react"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useParams, useNavigate } from "react-router-dom"
 import { axiosInstance } from "../lib/axios"
 import moment from "moment"
+import { useChatStore } from "../store/useChatStore"
 
 const FestivalAttendeesPage = () => {
   const {festivalId} = useParams()
   const [festival, setFestival] = useState(null)
   const [attendees, setAttendees] = useState([])
   const [loading, setLoading] = useState(false)
+  const {setSelectedUser} = useChatStore()
+  const navigate = useNavigate()
   
   
   useEffect(() => {
@@ -117,14 +120,18 @@ if (!festival || loading) {
           </div>
         </div>
         
-        <button className="btn btn-sm btn-primary">
+        <button className="btn btn-sm btn-primary"
+        onClick={() => {setSelectedUser(user) //sets selected user in chat store
+                        navigate("/messages") //navigates to message page
+        }}
+        >
           <Mail />
           Message
         </button>
       </div>
 
       <div className="mt-3">
-        <p className="text-sm text-gray-600">{user.bio || "No bio available."}</p>
+        <p className="text-sm text-gray-600">{user.bio || " "}</p>
       </div>
 
       <div className="mt-3 flex gap-3">
