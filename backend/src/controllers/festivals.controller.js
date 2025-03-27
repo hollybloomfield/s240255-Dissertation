@@ -85,26 +85,40 @@ export const searchFestivals = async (req,res) => {
 
 export const attendingFestival = async (req,res) => {
     try {
-        const {festivalId} = req.body
-        
+        const {festival} = req.body
 
-        if (!festivalId) {
+         if (!festival) {
             return res.status(400).json({message: "No Festival ID provided"})
         }
 
-        if (req.user.attendingFestivals.includes(festivalId)){
-            return res.status(400).json({message: "Festival is already marked as attending"})
-        }
+        const {
+            id: festivalId,
+            eventname,
+            venue: { town },
+            imageurl: image,
+            startdate,
+            enddate
+        } = festival; //deconstructing festival from request
+
+        if (req.user.attendingFestivals.some(f => f.festivalId === festivalId)) {
+            return res.status(400).json({ message: "Festival is already marked as attending" });
+        } //check if festival already exists in current users collection
 
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id, 
-            { $push: { attendingFestivals: festivalId } }, 
+            { $push: { attendingFestivals: { 
+                festivalId, 
+                eventname, 
+                location: town, 
+                image, 
+                startDate: new Date(startdate), 
+                endDate: new Date(enddate) 
+            }  //add festival data to attendingFestivals array in collection
+        },
+    }, 
             { new: true } 
           );
-
-        res.status(200).json({ message: "Festival added to attending list", user: updatedUser });
-
-        
+        res.status(200).json(updatedUser);
     } catch (error) {
         console.log("Error in attendingFestival controller:", error);
         res.status(500).json({ message: "Internal server error" });
@@ -115,18 +129,18 @@ export const notAttendingFestival = async (req,res) => {
     try {
         const {festivalId} = req.body
 
-        if (!festivalId) {
-            return res.status(400).json({message: "No Festival ID provided"})
-        }
-         if (!req.user.attendingFestivals.includes(festivalId)){
+        
+         if (!req.user.attendingFestivals.some(f => f.festivalId === festivalId)){
             return res.status(400).json({message: "Festival is not in attending list"})
         }
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id,
-            { $pull: { attendingFestivals: festivalId } }, // Pull festivalId from the array and delete
+            { $pull: { attendingFestivals: {festivalId: festivalId }} }, // if festival id matches, 
+                                                                        // Pull whole object from the array and delete
             { new: true } 
         );
-        res.status(200).json({ message: "Festival removed from attending list", user: updatedUser });
+       
+        res.status(200).json(updatedUser);
 
     } catch (error) {
         console.log("Error in notAttendingFestival controller:", error);
@@ -158,7 +172,7 @@ export const getAttendees = async (req,res) => {
         const userId = req.user._id //gets current user Id from the request
     
         const attendees = await User.find(
-            {attendingFestivals: festivalId, _id: { $ne: userId }}, //finds users which match festival Id in Attending festivals
+            {"attendingFestivals.festivalId": festivalId, _id: { $ne: userId }}, //finds users which match festival Id in Attending festivals
                                                                     //removes current user from response 
             {email: 0, password:0}                                  //does not send email or password in the response
         )
@@ -166,6 +180,19 @@ export const getAttendees = async (req,res) => {
         res.status(200).json(attendees) //response contains array of attendees found in user database
     } catch (error) {
         console.log("Error in getAttendees controller:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+export const getCurrentUsersFestivalsAttending = async (req,res) => {
+    try {
+        const loggedInUserId = req.user._id
+
+        const user = await User.findById(loggedInUserId).select("-password") 
+       
+        res.status(200).json(user.attendingFestivals)
+    } catch (error) {
+        console.log("Error in getCurrentUsersFestivalsAttending controller:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 }

@@ -19,6 +19,8 @@ import {Toaster} from "react-hot-toast";
 import SettingsPage from "./pages/SettingsPage";
 import FestivalAttendeesPage from "./pages/FestivalAttendeesPage";
 import { useChatStore } from "./store/useChatStore";
+import { useThemeStore } from "./store/useThemeStore";
+import { useFestivalStore } from "./store/useFestivalStore";
 
 
 
@@ -26,6 +28,7 @@ import { useChatStore } from "./store/useChatStore";
 const App = () => {
   const {authUser, checkAuth, isCheckingAuth, subscribeToNotifications, unsubscribeFromNotifications} = useAuthStore()
   const {subscribeToBlock, unsubscribeFromBlock} = useChatStore()
+  const {theme} = useThemeStore()
 
   useEffect(() => {
     if(authUser){
@@ -40,6 +43,7 @@ const App = () => {
     checkAuth();
   }, [checkAuth, useLocation()])
 
+ 
   useEffect(() => {
     if (authUser) { //subscribes to notifications across the whole application if user is logged in
         subscribeToNotifications();
@@ -60,7 +64,7 @@ const App = () => {
 
   return (
     //PADDING FOR IOS AND MOBILE PHONE VIEW, MAYBE HAVE TO CHANGE
-  <main data-theme="Festie">
+  <main data-theme={theme}>
     <Navbar />
   
 

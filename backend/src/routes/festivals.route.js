@@ -1,5 +1,5 @@
 import express from "express";
-import { attendingFestival, getAllFestivals, getAttendees, getFestival, notAttendingFestival, searchFestivals } from "../controllers/festivals.controller.js";
+import { attendingFestival, getAllFestivals, getAttendees, getCurrentUsersFestivalsAttending, getFestival, notAttendingFestival, searchFestivals } from "../controllers/festivals.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -10,6 +10,7 @@ router.post("/attending-festival", protectRoute, attendingFestival)
 router.delete("/not-attending-festival", protectRoute, notAttendingFestival)
 router.get("/get-festival", getFestival)
 router.get("/get-attendees", protectRoute, getAttendees)
+router.get("/get-attending-festivals", protectRoute, getCurrentUsersFestivalsAttending)
 
 
 

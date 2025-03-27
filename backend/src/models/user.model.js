@@ -61,9 +61,37 @@ const userSchema = new mongoose.Schema(
             },
         },
         attendingFestivals: {
-            type: [String],
-            default: []
-        },
+            type: [
+            {
+                _id:false,
+                festivalId: {
+                    type: String,
+                    required: true,
+                },
+                eventname: {
+                    type: String,
+                    required: true,
+                },
+                location: {
+                    type: String,
+                    required: true,
+                },
+                image: {
+                    type: String,
+                    default: "",
+                },
+                startDate: {
+                    type: Date,
+                    required:true
+                },
+                endDate: {
+                    type: Date,
+                    required:true
+                },
+            },
+        ],
+        default: [],
+    },
         blockedUsers: {
             type: [mongoose.Schema.Types.ObjectId],
             default: [],

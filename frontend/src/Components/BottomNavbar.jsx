@@ -6,14 +6,14 @@ const BottomNavbar = () => {
 const { authUser} = useAuthStore()
 const location = useLocation()
 
-const hiddenRoutes = ["/edit-profile", "/create-profile"]
+const hiddenRoutes = ["/edit-profile", "/create-profile", "/settings"]
 
 if (!authUser || hiddenRoutes.includes(location.pathname)){
   return null
 }
   return (
     
-    <div className="btm-nav btm-nav-lg border-t fixed bottom-0 left-0 right-0">
+    <div className="btm-nav btm-nav-lg border-t border-base-200 fixed bottom-0 left-0 right-0">
       
       <NavLink
         to="/" 

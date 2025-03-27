@@ -57,15 +57,8 @@ if (!festival || loading) {
 }
 
 
-
-
-
-
-
-
-
   return (
-    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center bg-secondary/60">
+    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center bg-secondary/80">
     <div className="sticky top-[79px] bg-base-100 z-[5] w-full">
       <div className="flex items-start gap-4 p-2 mx-auto">
        
@@ -131,7 +124,7 @@ if (!festival || loading) {
       </div>
 
       <div className="mt-3">
-        <p className="text-sm text-gray-600">{user.bio || " "}</p>
+        <p className="text-sm">{user.bio || " "}</p>
       </div>
 
       <div className="mt-3 flex gap-3">

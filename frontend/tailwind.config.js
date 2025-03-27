@@ -48,6 +48,19 @@ export default {
           "error": "#f43f5e",
           },
         },
+        {
+        FestieDark: {
+          "primary": "#b72b63",    
+          "secondary": "#f4a8c7",  
+          "accent": "#f8c291",  
+          "neutral": "#ffdbe0",   
+          "base-100": "#1a1a1a",   
+          "info": "#67e8f9", 
+          "success": "#86efac",   
+          "warning": "#fcd34d", 
+          "error": "#f43f5e",  
+        },
+      },
       ],
     },
 }

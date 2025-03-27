@@ -3,18 +3,31 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useFestivalStore } from "../store/useFestivalStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
+import { getCurrentUsersFestivalsAttending } from "../../../backend/src/controllers/festivals.controller";
 
 
 
 const FestivalsPage = () => {
-  const {notAttendingFestival, attendingFestival, getFestivals, isLoading, festivals, hasMore, resetFestivalList, searchFestivals, isSearching} = useFestivalStore();
-  const {authUser} = useAuthStore();
+  const {notAttendingFestival, attendingFestival, getFestivals, isLoading, getUsersFestivalsAttending,
+    festivals, hasMore, resetFestivalList, searchFestivals, isSearching, festivalsAttending} = useFestivalStore();
+
   const observer = useRef(null);
   const [keyword, setKeyword] = useState("")
   const navigate = useNavigate()
 
-  const [attendingFestivals, setAttendingFestivals] = useState(authUser.attendingFestivals)
+  useEffect(() => {
+    getUsersFestivalsAttending()
+ }, [getUsersFestivalsAttending])
 
+  useEffect(() => {
+    getFestivals(); // get festivals on component mount
+  }, [getFestivals]);
+
+  useEffect(() => {
+    return () => {
+      resetFestivalList(); // Clear festival list when navigating to another page
+    };
+  }, []);
 
   const lastFestivalRef = useCallback((node) => {
     if (isLoading || isSearching) return;
@@ -32,16 +45,6 @@ const FestivalsPage = () => {
 
     }, [isLoading, hasMore, getFestivals])
 
-  useEffect(() => {
-    getFestivals(); // get festivals on component mount
-  }, [getFestivals]);
-
-  useEffect(() => {
-    return () => {
-      resetFestivalList(); // Clear festival list when navigating to another page
-    };
-  }, []);
-
   const handleSearchSubmit = async (e) => {
     e.preventDefault()
     await searchFestivals(keyword)
@@ -50,42 +53,36 @@ const FestivalsPage = () => {
       behavior: 'smooth', 
     });
   }
-  //gets the festivals stored in the auth user adn also adds the extra one onto it to reflect instant changes
-  const handleAttendanceClick = async(e, festivalId, isAttending) => {
+  
+
+  const handleAttendanceClick = async(e, festival, isAttending) => {
       e.preventDefault()
       
-      const previousAttendingFestivals = [...attendingFestivals]
-      try {
         if (isAttending) {
-        setAttendingFestivals(prev => prev.filter(id => id !== festivalId)); 
-        await notAttendingFestival(festivalId)
+   
+        await notAttendingFestival(festival.id)
         
       } else {
-        setAttendingFestivals(prev => [...prev, festivalId]);
-        await attendingFestival(festivalId)
+       
+        await attendingFestival(festival)
       
       }
-      } catch (error) {
-        setAttendingFestivals(previousAttendingFestivals)
-        console.log("error in handleattendanceclick: ", error)
-      }
+     
 
     
 
   }
-  useEffect(() => {
-    setAttendingFestivals(authUser.attendingFestivals);
-  }, [authUser.attendingFestivals]);
-
+ 
   const handleUsersAttendingClick = async(festivalId) => {
     navigate(`/festivals/${festivalId}/attendees`)
   }
   
+ 
 
 
 
   return (
-    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center bg-secondary/60">
+    <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center bg-secondary/80">
     
     <div className="sticky top-[78px] bg-base-100 z-[5] w-full"> 
       <div className="flex gap-0.5 p-1">
@@ -115,8 +112,8 @@ const FestivalsPage = () => {
       </button>
       </div>
 
-      <div className="text-center bg-accent/60 w-full">
-        <h1 className="text-xl">Upcoming Festivals </h1>
+      <div className="text-center bg-accent w-full">
+        <h1 className="text-xl text-black">Upcoming Festivals </h1>
         </div>
 </div> 
 <div className=" w-full mx-auto p-2 space-y-3">
@@ -125,7 +122,7 @@ const FestivalsPage = () => {
 
 {festivals.map((festival, index) => { 
   
-  const isAttending = attendingFestivals.includes(festival.id)
+  const isAttending = festivalsAttending?.some(f => String(f.festivalId) === String(festival.id));
   
   return(
 <div 
@@ -149,7 +146,7 @@ const FestivalsPage = () => {
 
   <button
     className={`btn btn-sm rounded-full ${isAttending ? ' btn-accent ' : 'btn-secondary'}`}
-    onClick={(e) => handleAttendanceClick(e, festival.id, isAttending)}
+    onClick={(e) => handleAttendanceClick(e, festival, isAttending)}
   >
       {isAttending ? (
     <>

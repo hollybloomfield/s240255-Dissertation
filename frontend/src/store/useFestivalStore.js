@@ -11,6 +11,8 @@ export const useFestivalStore = create((set, get) =>({
     limit: 30,
     isSearching: false,
     maxFestivals: 50,
+    festivalsAttending: [],
+    isFetchingFestivalsAttending: false,
 
     
 
@@ -74,22 +76,35 @@ export const useFestivalStore = create((set, get) =>({
         }
     },
 
-    attendingFestival: async (festivalId) => {
+    attendingFestival: async (festival) => {
        
         try {
-            await axiosInstance.post("/festivals/attending-festival", {festivalId})
+
+            const res = await axiosInstance.post("/festivals/attending-festival", {festival})
+            console.log(res.data)
+         
+                set({
+                    festivalsAttending: res.data.attendingFestivals 
+                    // replace festival attending store with response from API
+                });
+            
             toast.success("Festival added")
         } catch (error) {
             toast.error("Error adding festival")
             console.log("Error adding festival attendance: ", error)
-            throw error //throw error so the error can be caught in handleattendanceclick
         }
     },
 
     notAttendingFestival: async (festivalId) => {
+        const {festivalsAttending} = get()
         try {
-            console.log("festival Id in store:",festivalId)
+           
             await axiosInstance.delete("/festivals/not-attending-festival", {data: {festivalId}})
+            
+            set({
+                festivalsAttending: festivalsAttending.filter(festival => festival.festivalId !== festivalId)
+            }); //remove whole object from festival attending store using the festival Id
+    
             toast.success("Festival Removed")
         } catch (error) {
             toast.error("Error removing festival")
@@ -97,6 +112,20 @@ export const useFestivalStore = create((set, get) =>({
             throw error
         }
     },
+
+    getUsersFestivalsAttending: async () => {
+       set({isFetchingFestivalsAttending: true})
+        try {
+            const res = await axiosInstance.get("/festivals/get-attending-festivals")
+            console.log("getfestivalattending store: ", res.data)
+            set({festivalsAttending: res.data})
+          
+        } catch (error) {
+            console.log("Error in getUsersFestivalsAttending:",error)
+        } finally {
+            set({isFetchingFestivalsAttending: false})
+        }
+    }
 
       
     //want state for toggling button and keeping state of festival id's that user is attending

@@ -1,21 +1,55 @@
+import { useEffect } from "react"
 import { useAuthStore } from "../store/useAuthStore"
+import { useFestivalStore } from "../store/useFestivalStore"
 
 const HomePage = () => {
   const {authUser} = useAuthStore()
+  const {getUsersFestivalsAttending, festivalsAttending} = useFestivalStore()
 
+    useEffect(() => {
+       getUsersFestivalsAttending()
+    }, [getUsersFestivalsAttending])
+   
   return (
     <div className="pt-[79px] pb-[79px] w-full min-h-screen flex flex-col items-center">
       <div className="max-w-2xl w-full mx-auto p-2 space-y-3">
         <div className="text-left">
-        <h1 className="text-2xl">Welcome back, {authUser.firstName}! </h1>
+        <h1 className="text-2xl">Welcome back, {authUser.firstName}!</h1>
         </div>
         <div className="card bg-secondary/10 shadow-sm">
-  <div className="card-body items-center text-center p-3">
+  <div className="card-body items-center text-center p-2">
     <h2 className="card-title">Your Festivals</h2>
-    <p>User festival card</p>
-    <div className="card-actions justify-end">
-      <button className="btn btn-sm btn-secondary">Explore more festivals</button>
+    <div className="space-y- w-full p-1 max-h-[200px] overflow-y-auto bg-base-100 rounded-lg">
+      {festivalsAttending.length ? (
+        festivalsAttending.map((festival) =>(
+          <div className="border-b border-base-300"> 
+          <div key={festival.festivalId} className=" flex items-center gap-4 justify-between p-3 ">
+            <div className="flex items-center gap-2"> 
+             <img 
+            src={festival.image} 
+            alt={festival.eventname} 
+            className="w-12 h-12 object-cover rounded-md" 
+          />
+          
+          <p className="text-sm ">{festival.eventname}</p>
+          </div>
+          <button className="btn btn-xs btn-secondary">
+            Find Friends!
+          </button>
+          </div></div>
+        ))
+      ) : (
+        <p className="text-xs">No Festivals Found</p>
+      )}
+
     </div>
+
+    
+  {festivalsAttending.length === 0 && (
+    <div className="card-actions justify-end">
+      <button className="btn btn-sm btn-secondary">Discover Festivals Here!</button>
+    </div>
+  )}
   </div>
 </div>
 <div className="card bg-secondary/10 shadow-sm">
