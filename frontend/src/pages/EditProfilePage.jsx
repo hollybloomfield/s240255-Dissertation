@@ -53,10 +53,6 @@ const EditProfilePage = () => {
     })
   }
 
-  
-
-
-
 
   return (
     <div className="w-full min-h-screen bg-secondary/80  flex items-center justify-center">
@@ -93,7 +89,9 @@ const EditProfilePage = () => {
                   </input>
                   </label>
                 </div>
+             
               </div>
+              
             </div>
 
             <div className="form-control">

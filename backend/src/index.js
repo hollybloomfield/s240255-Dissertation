@@ -7,6 +7,7 @@ import {connectDB} from "./lib/db.js";
 import authRoutes from "./routes/auth.route.js";
 import festivalsRoutes from "./routes/festivals.route.js";
 import messagesRoutes from "./routes/messages.route.js";
+import blogRoutes from "./routes/blog.route.js"
 
 import {app, server} from "./lib/socket.js";
 
@@ -28,6 +29,7 @@ app.use(cors({
 app.use("/api/auth", authRoutes)
 app.use("/api/festivals", festivalsRoutes)
 app.use("/api/messages", messagesRoutes)
+app.use("/api/blog", blogRoutes)
 
 server.listen(PORT, () => {
     console.log("server is running on PORT:" + PORT);

@@ -21,6 +21,7 @@ import FestivalAttendeesPage from "./pages/FestivalAttendeesPage";
 import { useChatStore } from "./store/useChatStore";
 import { useThemeStore } from "./store/useThemeStore";
 import { useFestivalStore } from "./store/useFestivalStore";
+import BlogPage from "./pages/BlogPage";
 
 
 
@@ -80,6 +81,8 @@ const App = () => {
       <Route path="/settings" element={ authUser ? <SettingsPage/> : <Navigate to="/login"/>}/>
       <Route path="/festivals/:festivalId/attendees" element={ authUser ? <FestivalAttendeesPage/> : <Navigate to="/login"/>}/>
       <Route path="/messages" element={ authUser ? <MessagesPage/> : <Navigate to="/login"/>}/>
+      <Route path="/blog/:blogId" element={ authUser ? <BlogPage/> : <Navigate to="/login"/>}/>
+
     </Routes>
 
     <Toaster />

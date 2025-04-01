@@ -188,9 +188,18 @@ export const getCurrentUsersFestivalsAttending = async (req,res) => {
     try {
         const loggedInUserId = req.user._id
 
-        const user = await User.findById(loggedInUserId).select("-password") 
+        const currentDate = new Date() //variable for current date
+
+        const user = await User.findById(loggedInUserId)
+        .select("-password") 
        
-        res.status(200).json(user.attendingFestivals)
+        const filteredUserFestivals = user.attendingFestivals.filter(festival =>
+            new Date(festival.endDate) >= currentDate
+        ) //only return users festival if the end date is in the future of the current date
+
+        const sortedUserFestivals = filteredUserFestivals.sort((a,b) => new Date(a.startDate) - new Date(b.startDate))
+        //sort festivals according to start date
+        res.status(200).json(sortedUserFestivals)
     } catch (error) {
         console.log("Error in getCurrentUsersFestivalsAttending controller:", error);
         res.status(500).json({ message: "Internal server error" });
