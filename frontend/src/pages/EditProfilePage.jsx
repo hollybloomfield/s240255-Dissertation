@@ -123,11 +123,11 @@ const EditProfilePage = () => {
               type="button"
               key={option}
               onClick={(e) => {
-                console.log(preferences.accommodation)
+              
                 //checks if option selected is same as before and sets it to null and deselects
                 const newAccommodation = preferences.accommodation === option ? "" : option;              
                 setPreferences({ ...preferences, accommodation: newAccommodation });
-                console.log(newAccommodation)
+             
               }}
               className={`btn btn-sm  btn-primary px-4 py-1  rounded-full
               ${preferences.accommodation === option ? 'btn-active' : 'btn-outline'}`}
@@ -154,11 +154,11 @@ const EditProfilePage = () => {
               type="button"
               key={option}
               onClick={(e) => {
-                console.log(preferences.travelMode)
+              
                 //checks if option selected is same as before and sets it to null and deselects
                 const newTravelMode = preferences.travelMode === option ? "" : option;              
                 setPreferences({ ...preferences, travelMode: newTravelMode });
-                console.log(newTravelMode)
+              
               }}
             >
               {option}
@@ -183,11 +183,11 @@ const EditProfilePage = () => {
               type="button"
               key={option}
               onClick={(e) => {
-                console.log(preferences.musicGenre)
+               
                 //checks if option selected is same as before and sets it to null and deselects
                 const newMusicGenre = preferences.musicGenre === option ? "" : option;              
                 setPreferences({ ...preferences, musicGenre: newMusicGenre });
-                console.log(newMusicGenre)
+                
               }}
             >
               {option}

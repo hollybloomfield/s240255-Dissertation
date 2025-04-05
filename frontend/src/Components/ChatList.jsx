@@ -9,7 +9,7 @@ const ChatList = () => {
     const {getUsers, users, isUsersLoading, selectedUser, setSelectedUser, isNewMessage, subscribeToChats, unsubscribeFromChats} = useChatStore()
     const {onlineUsers} = useAuthStore()
 
-    console.log("selected user in chatlist:", selectedUser)
+   
 
     useEffect(()=> {
         getUsers()
@@ -24,7 +24,7 @@ const ChatList = () => {
     const sortedUsers = useMemo(() => {
       return [...users].sort((a, b) => new Date(b.chatUpdatedAt) - new Date(a.chatUpdatedAt)); // sort users by chatupdatedAt
     }, [users]);
-    console.log("sortedUsers: ", sortedUsers)
+   
     if (isUsersLoading && !isNewMessage) return <ChatListSkeleton /> //only shows skeleton when first loading the component
 
   return (

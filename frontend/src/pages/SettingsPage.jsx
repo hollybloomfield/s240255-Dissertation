@@ -1,6 +1,6 @@
-import { ArrowLeft, Cake, Mail, Moon, Sun, User } from "lucide-react"
+import { ArrowLeft, Cake, Lock, Mail, Moon, Sun, User } from "lucide-react"
 import { useAuthStore } from "../store/useAuthStore"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import {useThemeStore} from "../store/useThemeStore"
 
 const SettingsPage = () => {
@@ -8,7 +8,7 @@ const SettingsPage = () => {
   const navigate = useNavigate()
   const {theme, setTheme} = useThemeStore()
 
-  console.log(theme)
+  
 
   return (
     <div className="w-full min-h-screen bg-secondary/80 flex items-center justify-center">
@@ -23,8 +23,7 @@ const SettingsPage = () => {
           <p className="mt-2">Your profile information</p>
         </div>
 
-        {/* User Info */}
-   
+    
         <div className="space-y-6">
             <div className="space-y-1.5">
               <div className="text-sm text-zinc-400 flex items-center gap-2">
@@ -49,7 +48,21 @@ const SettingsPage = () => {
               </div>
               <p className="px-4 py-2.5 bg-base-200 rounded-lg border">{new Date(authUser.dateOfBirth).toLocaleDateString()} </p>
             </div>
+
+            <div className="space-y-1.5">
+              <div className="text-sm flex items-center gap-2">
+                
+                <Link to="/settings/change-password" className="link link-primary">
+                 Change Password →
+                </Link>
+                
+              </div>
+              
+            </div>
+
           </div>
+
+          
 
           <div className="mt-1 p-1">
           
@@ -58,10 +71,10 @@ const SettingsPage = () => {
                 <span>Member Since</span>
                 <span>{authUser.createdAt?.split("T")[0]}</span>
               </div>
-              <div className="flex items-center justify-between py-2">
+              {/* <div className="flex items-center justify-between py-2">
                 <span>Account Status</span>
                 <span className="text-green-500">Active</span>
-              </div>
+              </div> */}
             </div>
           </div>
        

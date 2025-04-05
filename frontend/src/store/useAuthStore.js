@@ -17,6 +17,7 @@ export const useAuthStore = create((set, get) => ({
     isCheckingAuth: true,
     socket: null,
     onlineUsers: [],
+    isChangingPassword: false,
 
     checkAuth: async () => {
         try {
@@ -90,6 +91,19 @@ export const useAuthStore = create((set, get) => ({
             toast.error(error.response.data.message)
         } finally {
             set({isUpdatingProfile: false})
+        }
+    },
+
+    changePassword: async (data) => {
+        set({isChangingPassword: true})
+        try {
+            await axiosInstance.put("auth/change-password", data)
+            toast.success("Password Changed Successfully")
+        } catch (error) {
+            console.log("error in change password:", error)
+            toast.error(error.response.data.message)
+        } finally {
+            set({isChangingPassword: false})
         }
     },
 

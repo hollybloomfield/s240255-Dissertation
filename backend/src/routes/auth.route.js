@@ -1,5 +1,5 @@
 import express from "express";
-import { login, logout, signup, updateProfile, checkAuth } from "../controllers/auth.controller.js";
+import { login, logout, signup, updateProfile, checkAuth, changePassword } from "../controllers/auth.controller.js";
 import { protectRoute } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -18,5 +18,7 @@ router.put("/update-profile", protectRoute, updateProfile)
 
 //check if user is authenticated, called whenever application is refreshed
 router.get("/check", protectRoute, checkAuth)
+
+router.put("/change-password", protectRoute, changePassword)
 
 export default router;

@@ -113,7 +113,7 @@ const HomePage = () => {
             <p className="text-sm">{festival.eventname}</p>
           </div>
           <button
-            className="btn btn-xs btn-secondary"
+            className="btn btn-sm btn-secondary"
             onClick={() => handleUsersAttendingClick(festival.festivalId)}
           >
             Find Friends!
@@ -142,7 +142,7 @@ const HomePage = () => {
 
               
               <div className="grid grid-flow-col gap-5 text-center auto-cols-max">
-                <div className="flex flex-col p-2 bg-primary rounded-box text-neutral-content">
+                <div className="flex flex-col p-2 bg-primary/70 rounded-box text-neutral-content">
                   <span className="countdown text-4xl">
                     <span style={{ "--value": countdown.days }}></span>
                   </span>

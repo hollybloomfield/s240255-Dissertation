@@ -8,7 +8,7 @@ const {selectedUser, setSelectedUser, blockUser, unblockUser, blockedUsers, getB
 
 const {onlineUsers} = useAuthStore()
 
-console.log("selected user in message header:", selectedUser)
+
 
   useEffect(() => {
        getBlockedUsers()

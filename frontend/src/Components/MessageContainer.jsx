@@ -15,7 +15,7 @@ const MessageContainer = () => {
   const {authUser} = useAuthStore()
   const messageEndRef = useRef(null)
 
-  console.log("selected user in message container:", selectedUser)
+ 
     
   useEffect(() => {
       getMessages(selectedUser._id)

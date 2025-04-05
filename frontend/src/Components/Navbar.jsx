@@ -7,7 +7,7 @@ const navigate = useNavigate()
 const {logout, authUser} = useAuthStore()
 const location = useLocation()
 
-const hiddenRoutes = ["/edit-profile", "/create-profile","/settings"]
+const hiddenRoutes = ["/edit-profile", "/create-profile","/settings", "/settings/change-password"]
 
 if (!authUser || hiddenRoutes.includes(location.pathname)){
   return null
@@ -16,7 +16,7 @@ if (!authUser || hiddenRoutes.includes(location.pathname)){
 const handleClick = () => {
   navigate("/settings")
 }
-console.log(authUser.profilePic)
+
 
   return (
 <div className="navbar bg-base-100 border-b border-base-200 pt-5 fixed top-0 left-0 right-0 z-[10]">

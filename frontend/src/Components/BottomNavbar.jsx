@@ -6,7 +6,8 @@ const BottomNavbar = () => {
 const { authUser} = useAuthStore()
 const location = useLocation()
 
-const hiddenRoutes = ["/edit-profile", "/create-profile", "/settings"]
+const hiddenRoutes = ["/edit-profile", "/create-profile", "/settings", "/settings/change-password"]
+
 
 if (!authUser || hiddenRoutes.includes(location.pathname)){
   return null
@@ -17,7 +18,11 @@ if (!authUser || hiddenRoutes.includes(location.pathname)){
       
       <NavLink
         to="/" 
-        className={({ isActive }) => (isActive ? "text-primary active" : "text-primary")}
+        className={() =>
+          location.pathname === "/" || location.pathname.startsWith("/blog")
+            ? "text-primary active"
+            : "text-primary"
+        }
         
       >
         <House />
