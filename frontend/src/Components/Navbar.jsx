@@ -2,10 +2,12 @@ import { Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
 import { useEffect, useState } from "react";
+import { useOfflineStore } from "../store/useOfflineStore";
 
 const Navbar = () => {
 const navigate = useNavigate()
-const {logout, authUser, isOffline} = useAuthStore()
+const {logout, authUser} = useAuthStore()
+const {isOffline} = useOfflineStore()
 const location = useLocation()
 
 const hiddenRoutes = ["/edit-profile", "/create-profile","/settings", "/settings/change-password"]
@@ -24,7 +26,7 @@ const handleClick = () => {
   <div className="flex-1 gap-3">
     <a className="text-4xl font-gluten text-primary">Festie</a>
     {isOffline && (
-          <div className="bg-primary text-white text-sm p-1 rounded-md">
+          <div className="bg-primary text-white text-sm p-1 rounded-md text-center">
             Offline Mode
           </div>
      )}
@@ -51,7 +53,7 @@ const handleClick = () => {
             <Link to= "/edit-profile">Edit Profile</Link>
          
         </li>
-        <li><button onClick={logout}>Logout</button></li>
+        <li><button onClick={logout} disabled={isOffline}>Logout</button></li>
         </ul>
       </div>
   </div>

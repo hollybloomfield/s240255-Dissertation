@@ -20,23 +20,7 @@ export const useAuthStore = create((set, get) => ({
     socket: null,
     onlineUsers: [],
     isChangingPassword: false,
-    isOffline: false,
-
-    checkIfOffline: () => {
-        //event handlers for when the application changes from online to offline
-        const handleOnline = () => set({isOffline: false});
-        const handleOffline = () => set({isOffline: true});
-      
-        //listens for online or offline event and calls the handlers above
-        window.addEventListener('online', handleOnline);
-        window.addEventListener('offline', handleOffline);
-
-        //remove event listeners
-        return () => {
-          window.removeEventListener('online', handleOnline);
-          window.removeEventListener('offline', handleOffline);
-        };
-    },
+   
 
     checkAuth: async () => {
         try {

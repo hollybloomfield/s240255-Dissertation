@@ -82,6 +82,8 @@ export const useChatStore = create((set, get)=> ({
     subscribeToChats: () => {
         const socket = useAuthStore.getState().socket
 
+        if(!socket) return
+
         socket.on("newChat", (newChat) => {
             //add senderChatUser from emit onto user array
             set((state) => ({
@@ -101,6 +103,8 @@ export const useChatStore = create((set, get)=> ({
 
     unsubscribeFromChats: () => {
         const socket = useAuthStore.getState().socket
+        if(!socket) return
+        
         socket.off("newChat")
         socket.off("updateChats")
     }, //unsubscribes from "newChat" and "updateChats" event

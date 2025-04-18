@@ -23,12 +23,14 @@ import { useThemeStore } from "./store/useThemeStore";
 import { useFestivalStore } from "./store/useFestivalStore";
 import BlogPage from "./pages/BlogPage";
 import ChangePasswordPage from "./pages/ChangePasswordPage";
+import { useOfflineStore } from "./store/useOfflineStore";
 
 
 
 
 const App = () => {
-  const {authUser, checkAuth, isCheckingAuth, subscribeToNotifications, unsubscribeFromNotifications, checkIfOffline} = useAuthStore()
+  const {authUser, checkAuth, isCheckingAuth, subscribeToNotifications, unsubscribeFromNotifications} = useAuthStore()
+  const {checkIfOffline, initOfflineStatus} = useOfflineStore()
   const {subscribeToBlock, unsubscribeFromBlock} = useChatStore()
   const {theme} = useThemeStore()
 
@@ -44,15 +46,16 @@ const App = () => {
   useEffect(() => {
     checkAuth();
   }, [checkAuth, useLocation()])
-
+  
+ 
   useEffect(() => {
     const removeOfflineEventListeners = checkIfOffline()
 
     return removeOfflineEventListeners
   }, [])
 
-
   useEffect(() => {
+  
     if (authUser) { //subscribes to notifications across the whole application if user is logged in
         subscribeToNotifications();
     }

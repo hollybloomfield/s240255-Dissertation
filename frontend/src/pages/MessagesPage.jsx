@@ -3,12 +3,13 @@ import ChatList from "../Components/ChatList"
 import NoChatSelected from "../Components/NoChatSelected"
 import MessageContainer from "../Components/MessageContainer"
 import { useEffect } from "react"
+import { useOfflineStore } from "../store/useOfflineStore"
+import OfflineMessageContainer from "../Components/OfflineMessageContainer"
 
 const MessagesPage = () => {
-    const {selectedUser, subscribeToBlock, unsubscribeFromBlock} = useChatStore()
+    const {selectedUser} = useChatStore()
+    const {isOffline} = useOfflineStore()
 
-     
-    
   return (
     <div className="pt-[79px] pb-[79px] w-full">
    
@@ -25,7 +26,8 @@ const MessagesPage = () => {
               sm:block
               flex-1 h-full
             `}>
-          {!selectedUser ? <NoChatSelected /> : <MessageContainer/>}
+          {isOffline ? (<OfflineMessageContainer/>) :
+          !selectedUser ? (<NoChatSelected />) : (<MessageContainer/>)}
         
         </div>
         </div>

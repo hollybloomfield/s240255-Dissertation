@@ -4,13 +4,14 @@ import { useFestivalStore } from "../store/useFestivalStore";
 import { useAuthStore } from "../store/useAuthStore";
 import { useNavigate } from "react-router-dom";
 import { getCurrentUsersFestivalsAttending } from "../../../backend/src/controllers/festivals.controller";
+import { useOfflineStore } from "../store/useOfflineStore";
 
 
 
 const FestivalsPage = () => {
   const {notAttendingFestival, attendingFestival, getFestivals, isLoading, getUsersFestivalsAttending,
     festivals, hasMore, resetFestivalList, searchFestivals, isSearching, festivalsAttending} = useFestivalStore();
-  const {isOffline} = useAuthStore()
+  const {isOffline} = useOfflineStore()
   const observer = useRef(null);
   const [keyword, setKeyword] = useState("")
   const navigate = useNavigate()
