@@ -10,18 +10,24 @@ import { getCurrentUsersFestivalsAttending } from "../../../backend/src/controll
 const FestivalsPage = () => {
   const {notAttendingFestival, attendingFestival, getFestivals, isLoading, getUsersFestivalsAttending,
     festivals, hasMore, resetFestivalList, searchFestivals, isSearching, festivalsAttending} = useFestivalStore();
-
+  const {isOffline} = useAuthStore()
   const observer = useRef(null);
   const [keyword, setKeyword] = useState("")
   const navigate = useNavigate()
 
   useEffect(() => {
-    getUsersFestivalsAttending()
- }, [getUsersFestivalsAttending])
+    if (!isOffline) {
+      getUsersFestivalsAttending()
+    }
+    
+ }, [getUsersFestivalsAttending, isOffline])
 
   useEffect(() => {
-    getFestivals(); // get festivals on component mount
-  }, [getFestivals]);
+    if (!isOffline) {
+      getFestivals(); // get festivals on component mount
+    }
+    
+  }, [getFestivals, isOffline]);
 
   useEffect(() => {
     return () => {
@@ -30,7 +36,7 @@ const FestivalsPage = () => {
   }, []);
 
   const lastFestivalRef = useCallback((node) => {
-    if (isLoading || isSearching) return;
+    if (isLoading || isSearching || isOffline) return;
 
     if (observer.current) observer.current.disconnect() //removes any observers to avoid duplication
 
@@ -43,15 +49,17 @@ const FestivalsPage = () => {
     if (node) observer.current.observe(node) //attach observer to the last festival item
 
 
-    }, [isLoading, hasMore, getFestivals])
+    }, [isLoading, hasMore, getFestivals, isOffline])
 
   const handleSearchSubmit = async (e) => {
     e.preventDefault()
+    if (!isOffline) {
     await searchFestivals(keyword)
     window.scrollTo({
       top: 0,
       behavior: 'smooth', 
     });
+  }
   }
   
 
@@ -120,69 +128,73 @@ const FestivalsPage = () => {
 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
 
 
-{festivals.map((festival, index) => { 
-  
-  const isAttending = festivalsAttending?.some(f => String(f.festivalId) === String(festival.id));
-  
-  return(
-<div 
-  key={festival.id}
-  ref={index === festivals.length - 1 ? lastFestivalRef : null}
-  className="card w-full sm:w-80 max-w-xs bg-base-100 shadow-lg">
-  
-  <figure className="px-4 pt-4 flex justify-center">
-    <div className="w-48">
-    <img
-      className="rounded-lg w-full aspect-square object-cover"
-      src={festival.largeimageurl}
-      alt="Festival"
-      loading="lazy"
-    /></div>
-  </figure>
 
-  <div className="card-body p-4 bg-secondary/10 rounded-lg">
-  <div className="flex flex-wrap justify-between gap-2">
-  <h2 className="card-title text-xl font-bold">{festival.eventname}</h2>
+{isOffline ? (
+  <p className="text-center text-lg text-primary">You are currently offline. Please go online to view festivals.</p>
+) : (
+  festivals.map((festival, index) => { 
+    const isAttending = festivalsAttending?.some(f => String(f.festivalId) === String(festival.id));
+    
+    return(
+      <div 
+        key={festival.id}
+        ref={index === festivals.length - 1 ? lastFestivalRef : null}
+        className="card w-full sm:w-80 max-w-xs bg-base-100 shadow-lg">
+        
+        <figure className="px-4 pt-4 flex justify-center">
+          <div className="w-48">
+            <img
+              className="rounded-lg w-full aspect-square object-cover"
+              src={festival.largeimageurl}
+              alt="Festival"
+              loading="lazy"
+            />
+          </div>
+        </figure>
 
-  <button
-    className={`btn btn-sm rounded-full ${isAttending ? ' btn-accent ' : 'btn-secondary'}`}
-    onClick={(e) => handleAttendanceClick(e, festival, isAttending)}
-  >
-      {isAttending ? (
-    <>
-      <Check className="w-5" />Attending
-    </>
-  ) : (
-    <>
-      <Plus className="w-5" />Attend
-    </>
-  )}
-  </button>
-  </div>
-    
-    
-    <div className="flex flex-col flex-grow gap-2 text-sm">
-      <div className="flex items-center gap-2">
-        <CalendarDays className="h-5 w-5 text-primary" />
-        <p>{new Date(festival.startdate).toLocaleDateString()} - {new Date(festival.enddate).toLocaleDateString()} </p>
+        <div className="card-body p-4 bg-secondary/10 rounded-lg">
+          <div className="flex flex-wrap justify-between gap-2">
+            <h2 className="card-title text-xl font-bold">{festival.eventname}</h2>
+
+            <button
+              className={`btn btn-sm rounded-full ${isAttending ? ' btn-accent ' : 'btn-secondary'}`}
+              onClick={(e) => handleAttendanceClick(e, festival, isAttending)}
+            >
+              {isAttending ? (
+                <>
+                  <Check className="w-5" />Attending
+                </>
+              ) : (
+                <>
+                  <Plus className="w-5" />Attend
+                </>
+              )}
+            </button>
+          </div>
+          
+          <div className="flex flex-col flex-grow gap-2 text-sm">
+            <div className="flex items-center gap-2">
+              <CalendarDays className="h-5 w-5 text-primary" />
+              <p>{new Date(festival.startdate).toLocaleDateString()} - {new Date(festival.enddate).toLocaleDateString()}</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-primary" />
+              <p>{festival.venue.town}</p>
+            </div>
+          </div>
+
+          <div className="card-actions mt-3 justify-center">
+            <button 
+              className="btn btn-outline btn-sm btn-primary bg-base-100 rounded-full"
+              onClick={() => handleUsersAttendingClick(festival.id)}>
+              See Who's Going!
+            </button>
+          </div>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <MapPin className="h-5 w-5 text-primary" />
-        <p>{festival.venue.town}</p>
-      </div>
-     
-    </div>
-
-    
-    <div className="card-actions mt-3 justify-center">
-    <button 
-    className="btn btn-outline btn-sm btn-primary bg-base-100 rounded-full"
-    onClick={() => handleUsersAttendingClick(festival.id)}>See Who's Going!</button>
-    </div>
-  </div>
-</div>
-)
-})}
+    );
+  })
+)}
 
 </div>
 
@@ -190,6 +202,7 @@ const FestivalsPage = () => {
   <Loader className="size-5 animate-spin "/>
   <p>Loading festivals</p>
   </div>}
+
 
 
 {!hasMore && !isLoading && <p className="text-center">No more results</p>}

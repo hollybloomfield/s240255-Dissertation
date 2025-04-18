@@ -28,7 +28,7 @@ import ChangePasswordPage from "./pages/ChangePasswordPage";
 
 
 const App = () => {
-  const {authUser, checkAuth, isCheckingAuth, subscribeToNotifications, unsubscribeFromNotifications} = useAuthStore()
+  const {authUser, checkAuth, isCheckingAuth, subscribeToNotifications, unsubscribeFromNotifications, checkIfOffline} = useAuthStore()
   const {subscribeToBlock, unsubscribeFromBlock} = useChatStore()
   const {theme} = useThemeStore()
 
@@ -45,7 +45,13 @@ const App = () => {
     checkAuth();
   }, [checkAuth, useLocation()])
 
- 
+  useEffect(() => {
+    const removeOfflineEventListeners = checkIfOffline()
+
+    return removeOfflineEventListeners
+  }, [])
+
+
   useEffect(() => {
     if (authUser) { //subscribes to notifications across the whole application if user is logged in
         subscribeToNotifications();

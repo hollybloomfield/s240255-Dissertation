@@ -6,8 +6,6 @@ import { axiosInstance } from "../lib/axios"
 import {Link} from "react-router-dom"
 
 const HomePage = () => {
-
-  //TO DO - MAYBE ADD POPULAR FESTIVALS HERE?
   const {authUser} = useAuthStore()
   const {getUsersFestivalsAttending, festivalsAttending} = useFestivalStore()
   const navigate = useNavigate()
@@ -15,6 +13,7 @@ const HomePage = () => {
   const [nextFestival, setNextFestival] = useState(null)
   const [blogs, setBlogs] = useState([])
 
+ 
     useEffect(() => {
       const getBlogs = async () => {
         try {

@@ -91,6 +91,7 @@ export const login = async(req,res) => {
             bio: user.bio,
             preferences: user.preferences,
             attendingFestivals: user.attendingFestivals,
+            blockedUsers: user.blockedUsers,
         })
 
     } catch (error) {
@@ -143,7 +144,18 @@ export const updateProfile = async(req, res) => {
         //updates database and new:true means latest updates can be seen even after they've just been applied
         const updatedUser = await User.findByIdAndUpdate(userId, updateData, {new:true})
 
-        res.status(200).json(updatedUser)
+        res.status(200).json({
+            _id: updatedUser._id,
+            email: updatedUser.email,
+            firstName: updatedUser.firstName,
+            lastName: updatedUser.lastName,
+            profilePic: updatedUser.profilePic,
+            bio: updatedUser.bio,
+            preferences: updatedUser.preferences,
+            attendingFestivals: updatedUser.attendingFestivals,
+            blockedUsers: updatedUser.blockedUsers,
+        })
+        console.log(updatedUser)
         } catch (error) {
         console.log("error in update profile controller:", error)
         res.status(500).json({message: "Internal server error"})

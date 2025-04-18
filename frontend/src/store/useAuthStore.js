@@ -3,6 +3,7 @@ import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast";
 import {io} from "socket.io-client";
 import { useChatStore } from "./useChatStore.js";
+import { setIDBAuthUser, getAuthUserFromIDB, clearAuthUserStore } from "../lib/idb.js";
 
 const BASE_URL = "http://localhost:5001"
 
@@ -10,6 +11,7 @@ const BASE_URL = "http://localhost:5001"
 export const useAuthStore = create((set, get) => ({
     //initial states
     authUser: null,
+    userID: null,
     isSigningUp: false,
     isLoggingIn: false,
     isUpdatingProfile: false,
@@ -18,18 +20,45 @@ export const useAuthStore = create((set, get) => ({
     socket: null,
     onlineUsers: [],
     isChangingPassword: false,
+    isOffline: false,
+
+    checkIfOffline: () => {
+        //event handlers for when the application changes from online to offline
+        const handleOnline = () => set({isOffline: false});
+        const handleOffline = () => set({isOffline: true});
+      
+        //listens for online or offline event and calls the handlers above
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        //remove event listeners
+        return () => {
+          window.removeEventListener('online', handleOnline);
+          window.removeEventListener('offline', handleOffline);
+        };
+    },
 
     checkAuth: async () => {
         try {
-            const res = await axiosInstance.get("/auth/check")
 
-
-            set({authUser:res.data})
-
-            get().connectSocket()
+            if(navigator.onLine){
+                const res = await axiosInstance.get("/auth/check")
+                set({authUser:res.data})
+                get().connectSocket()
+            } else {
+                const storedAuthUser = await getAuthUserFromIDB() //set auth user to indexed db store if offline
+                if (storedAuthUser) {
+                    set({authUser: storedAuthUser})
+                } else {
+                    set({authUser: null})
+                }
+            }
+            
         } catch (error) {
             console.log("Error in checkAuth:", error)
             set({authUser:null})
+            clearAuthUserStore() //also clear the authUser database in frontend 
+                                 // so users cannot be logged in while offline
         } finally {
             set({isCheckingAuth: false})
     }
@@ -42,6 +71,8 @@ export const useAuthStore = create((set, get) => ({
             set({ authUser: res.data})
             toast.success("Account created successfully")
             get().connectSocket()
+
+            setIDBAuthUser(res.data) //set auth store in indexed db
             
         } catch (error){
             toast.error(error.response.data.message)
@@ -56,8 +87,10 @@ export const useAuthStore = create((set, get) => ({
             await axiosInstance.post("/auth/logout")
             set({ authUser: null})
             toast.success("Logged out successfully")
+
             get().disconnectSocket()
-            
+
+            clearAuthUserStore()
         } catch (error) {
             toast.error(error.response.data.message)
         }
@@ -71,7 +104,10 @@ export const useAuthStore = create((set, get) => ({
             console.log("Login response:", res.data)
             set({ authUser: res.data})
             toast.success("Logged in successfully")
+
             get().connectSocket()
+
+            setIDBAuthUser(res.data) //set auth store in indexed db
         } catch (error) {
             toast.error(error.response.data.message)
         } finally {
@@ -86,6 +122,8 @@ export const useAuthStore = create((set, get) => ({
             const res = await axiosInstance.put("auth/update-profile", data)
             set({ authUser: res.data})
             toast.success("Profile updated successfully")
+
+            setIDBAuthUser(res.data) //set auth store in indexed db
         } catch (error) {
             console.log("error in update profile:", error)
             toast.error(error.response.data.message)
@@ -153,6 +191,8 @@ export const useAuthStore = create((set, get) => ({
         socket.off("newNotification")
        
     }, //unsubsribes from "newNotification" event
+
+
 
 
 }))

@@ -1,10 +1,11 @@
 import { Settings } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
 const navigate = useNavigate()
-const {logout, authUser} = useAuthStore()
+const {logout, authUser, isOffline} = useAuthStore()
 const location = useLocation()
 
 const hiddenRoutes = ["/edit-profile", "/create-profile","/settings", "/settings/change-password"]
@@ -20,11 +21,16 @@ const handleClick = () => {
 
   return (
 <div className="navbar bg-base-100 border-b border-base-200 pt-5 fixed top-0 left-0 right-0 z-[10]">
-  <div className="flex-1">
+  <div className="flex-1 gap-3">
     <a className="text-4xl font-gluten text-primary">Festie</a>
+    {isOffline && (
+          <div className="bg-primary text-white text-sm p-1 rounded-md">
+            Offline Mode
+          </div>
+     )}
   </div>
   <div className="flex-none">
- 
+  
       <div tabIndex={0} role="button" className="btn btn-ghost btn-circle" onClick={handleClick}>
             <Settings/>
       </div>
