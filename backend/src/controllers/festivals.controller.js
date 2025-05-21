@@ -101,7 +101,7 @@ export const attendingFestival = async (req,res) => {
         } = festival; //deconstructing festival from request
 
         if (req.user.attendingFestivals.some(f => f.festivalId === festivalId)) {
-            return res.status(400).json({ message: "Festival is already marked as attending" });
+            return res.status(409).json({ message: "Festival is already marked as attending" });
         } //check if festival already exists in current users collection
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -131,7 +131,7 @@ export const notAttendingFestival = async (req,res) => {
 
         
          if (!req.user.attendingFestivals.some(f => f.festivalId === festivalId)){
-            return res.status(400).json({message: "Festival is not in attending list"})
+            return res.status(409).json({message: "Festival is not in attending list"})
         }
         const updatedUser = await User.findByIdAndUpdate(
             req.user._id,

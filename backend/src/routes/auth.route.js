@@ -12,7 +12,7 @@ router.post("/signup", signup )
 router.post("/login", login)
 
 router.post("/logout", logout)
-//MIGHT MOVE THIS TO USER ROUTE
+
 // protectRoute first checks that user is authenticated
 router.put("/update-profile", protectRoute, updateProfile)
 
